@@ -17,7 +17,7 @@ h1{font-size:20px;letter-spacing:3px;color:#00BFFF;text-transform:uppercase;marg
 .m.on{border-bottom-color:currentColor}
 #cue{font-size:64px;font-weight:bold;text-align:center;color:#4A4A6A;letter-spacing:4px;min-height:80px;line-height:80px;margin-bottom:8px}
 #binfo{text-align:center;font-size:12px;color:#4A4A6A;letter-spacing:2px;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:20px}
 .cell{height:10px;border-radius:3px;background:#1E1E30}
 button{font-family:'Courier New',monospace;cursor:pointer;border:none}
 .btn{display:block;width:100%;padding:16px;border-radius:10px;font-size:14px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
@@ -46,9 +46,10 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 <body>
 
 <h1>⚡ FGP Cadence</h1>
-<div class="sub">briesath rhythm · 60 bpm · 4/4 · 16 beats</div>
+<div class="sub">briesath rhythm · 60 bpm · 4/4 · 4 beat prep + 16 beats</div>
 
 <div class="measure-row">
+  <div class="m" id="m0">PREP</div>
   <div class="m" id="m1">M1</div>
   <div class="m" id="m2">M2</div>
   <div class="m" id="m3">M3</div>
@@ -97,6 +98,10 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 
 <script>
 var BEATS=[
+  {m:0,b:1,l:'...',v:null,c:'#2A2A3A'},
+  {m:0,b:2,l:'...',v:null,c:'#2A2A3A'},
+  {m:0,b:3,l:'...',v:null,c:'#2A2A3A'},
+  {m:0,b:4,l:'GO',v:'Go',c:'#4A4A6A'},
   {m:1,b:1,l:'STEP',v:'Step',c:'#00BFFF'},
   {m:1,b:2,l:'SET',v:'Set',c:'#00BFFF'},
   {m:1,b:3,l:'DOWN',v:'Down',c:'#00BFFF'},
@@ -137,7 +142,7 @@ var made=0,att=0,run=0,best=0,wi=0;
 
 // Build grid
 var g=document.getElementById('grid');
-for(var i=0;i<16;i++){var d=document.createElement('div');d.className='cell';d.id='c'+i;g.appendChild(d);}
+for(var i=0;i<20;i++){var d=document.createElement('div');d.className='cell';d.id='c'+i;g.appendChild(d);}
 
 function toggle(){on?stop():go();}
 
@@ -148,8 +153,15 @@ function go(){
   document.getElementById('rbtn').style.display='none';
   fire(0);
   tmr=setInterval(function(){
-    idx=(idx+1)%16;
-    if(idx===0){cyc++;document.getElementById('cyc').textContent=cyc;nextW();}
+    idx++;
+    if(idx>=20){
+      // One cycle complete — stop
+      cyc++;
+      document.getElementById('cyc').textContent=cyc;
+      nextW();
+      stop();
+      return;
+    }
     fire(idx);
   },1000);
 }
@@ -163,8 +175,8 @@ function stop(){
   document.getElementById('cue').textContent='READY';
   document.getElementById('cue').style.color='#4A4A6A';
   document.getElementById('binfo').textContent='60 BPM · TAP START';
-  for(var i=0;i<16;i++){var c=document.getElementById('c'+i);c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
-  for(var m=1;m<=4;m++){var e=document.getElementById('m'+m);e.style.color='#4A4A6A';e.classList.remove('on');}
+  for(var i=0;i<20;i++){var c=document.getElementById('c'+i);c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
+  for(var m=0;m<=4;m++){var e=document.getElementById('m'+m);e.style.color='#4A4A6A';e.classList.remove('on');}
 }
 
 function fire(i){
@@ -172,12 +184,12 @@ function fire(i){
   document.getElementById('cue').textContent=b.l;
   document.getElementById('cue').style.color=b.c;
   document.getElementById('binfo').textContent=b.b+' \xb7 4';
-  for(var m=1;m<=4;m++){
+  for(var m=0;m<=4;m++){
     var e=document.getElementById('m'+m);
     if(b.m===m){e.style.color=b.c;e.classList.add('on');}
     else{e.style.color='#4A4A6A';e.classList.remove('on');}
   }
-  for(var j=0;j<16;j++){
+  for(var j=0;j<20;j++){
     var c=document.getElementById('c'+j);
     if(j===i){c.style.background=b.c;c.style.height='18px';c.style.opacity='1';}
     else if(j<i){c.style.background=BEATS[j].c;c.style.height='10px';c.style.opacity='0.2';}
