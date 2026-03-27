@@ -1,11 +1,11 @@
 {
   "name": "Flash Gordon Pool",
   "short_name": "FGP",
-  "description": "The comeback nobody saw coming.",
-  "start_url": "/",
+  "description": "Flash Gordon Pool — AI coaching, stroke cadence, Fargo tracker, session log, FGP Fit",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#0A0A0F",
-  "theme_color": "#00BFFF",
+  "theme_color": "#0A0A0F",
   "orientation": "portrait",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
