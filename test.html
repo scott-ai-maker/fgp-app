@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { background: #0A0A0F; color: #00BFFF; font-family: monospace; padding: 20px; }
+button { background: #00BFFF; color: #000; padding: 20px 40px; font-size: 20px; border: none; border-radius: 10px; display: block; margin: 20px 0; width: 100%; }
+#log { color: #00E676; margin-top: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+<h2>FGP Click Test</h2>
+<button onclick="document.getElementById('log').innerHTML += '<br>BUTTON CLICKED ✓'">TAP ME</button>
+<button onclick="alert('JS works!')">ALERT TEST</button>
+<div id="log">Waiting for tap...</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('log').innerHTML = 'JS loaded ✓';
+});
+</script>
+</body>
+</html>
