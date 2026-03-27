@@ -151,19 +151,28 @@ function go(){
   document.getElementById('sbtn').innerHTML='&#9646;&#9646; STOP';
   document.getElementById('sbtn').className='btn red';
   document.getElementById('rbtn').style.display='none';
-  fire(0);
-  tmr=setInterval(function(){
-    idx++;
-    if(idx>=20){
-      // One cycle complete — stop
-      cyc++;
-      document.getElementById('cyc').textContent=cyc;
-      nextW();
-      stop();
-      return;
-    }
-    fire(idx);
-  },1000);
+  // Unlock iOS audio with a silent utterance on the direct tap gesture
+  if(window.speechSynthesis){
+    window.speechSynthesis.cancel();
+    var unlock=new SpeechSynthesisUtterance(' ');
+    unlock.volume=0;
+    window.speechSynthesis.speak(unlock);
+  }
+  // Small delay so unlock settles before first real word
+  setTimeout(function(){
+    fire(0);
+    tmr=setInterval(function(){
+      idx++;
+      if(idx>=20){
+        cyc++;
+        document.getElementById('cyc').textContent=cyc;
+        nextW();
+        stop();
+        return;
+      }
+      fire(idx);
+    },1000);
+  },150);
 }
 
 function stop(){
