@@ -4,886 +4,215 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FGP">
-<meta name="theme-color" content="#0A0A0F">
-<title>Flash Gordon Pool</title>
-<link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="FGP Cadence">
+<title>FGP Cadence</title>
 <style>
-:root {
-  --blue:#00BFFF; --gold:#F5C400; --green:#00E676; --red:#FF3D57;
-  --black:#0A0A0F; --dark:#0F0F18; --panel:#141420; --border:#1E1E30;
-  --muted:#4A4A6A; --text:#E0E0F0; --nav-h:64px; --safe-b:env(safe-area-inset-bottom,0px);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text);font-family:'Rajdhani',sans-serif}
-button{border:none;background:none;cursor:pointer;font-family:inherit}
-input,textarea{font-family:'JetBrains Mono',monospace}
-#app{display:flex;flex-direction:column;height:100%;height:100dvh}
-#views{flex:1;overflow:hidden;position:relative}
-.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;padding:16px 16px calc(var(--nav-h) + var(--safe-b) + 16px);-webkit-overflow-scrolling:touch}
-.view.active{display:block}
-#nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe-b));background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:8px;z-index:100}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;color:var(--muted);transition:color .15s;-webkit-tap-highlight-color:transparent}
-.nav-btn.active{color:var(--blue)}
-.nav-btn svg{width:22px;height:22px}
-.nav-btn span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px}
-.page-title{font-size:22px;font-weight:700;letter-spacing:2px;color:var(--blue);text-transform:uppercase}
-.page-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px}
-.page-header{padding:12px 0 20px}
-.header-row{display:flex;align-items:flex-start;justify-content:space-between}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
-.card-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:all .15s;-webkit-tap-highlight-color:transparent}
-.btn-blue{background:var(--blue);color:var(--black)}
-.btn-gold{background:var(--gold);color:var(--black)}
-.btn-red{background:var(--red);color:#fff}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.btn:active{transform:scale(.97);opacity:.85}
-.btn:disabled{opacity:.4;pointer-events:none}
-.input{width:100%;background:#0A0A14;border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
-.input:focus{border-color:var(--blue)}
-.input::placeholder{color:var(--muted)}
-.section-header{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px}
-.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.stat-box{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center}
-.stat-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--blue);display:block}
-.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;display:block;margin-top:2px}
-.icon-btn{width:36px;height:36px;border-radius:8px;background:var(--panel);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end}
-.sheet-overlay.active{display:flex}
-.sheet{width:100%;background:var(--dark);border-radius:20px 20px 0 0;border:1px solid var(--border);border-bottom:none;max-height:90vh;overflow-y:auto;padding:20px 16px calc(var(--safe-b) + 20px);animation:sheet-up .25s ease}
-@keyframes sheet-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
-.sheet-title{font-size:18px;font-weight:700;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:16px}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeIn .3s ease forwards}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.5}}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-/* COACH */
-#api-notice{background:rgba(245,196,0,.05);border:1px solid rgba(245,196,0,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);display:flex;align-items:center;gap:8px}
-#api-notice.hidden{display:none}
-.loading-box{text-align:center;padding:40px 20px;display:none}
-.loading-box.active{display:block}
-.pulse-ring{width:56px;height:56px;border:2px solid var(--blue);border-radius:50%;margin:0 auto 14px;animation:pulse 1.5s ease-in-out infinite}
-.loading-step{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin:4px 0;transition:color .3s}
-.loading-step.active{color:var(--blue)}
-.loading-step.done{color:var(--green)}
-.error-box{background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.3);border-radius:10px;padding:14px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red);display:none}
-.error-box.active{display:block}
-.score-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.score-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);flex:1}
-.score-track{flex:0 0 80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.score-fill{height:100%;border-radius:3px;transition:width .6s}
-.score-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);width:24px;text-align:right}
-.drill-item{background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
-.drill-name{font-weight:700;font-size:14px;color:var(--gold);margin-bottom:3px}
-.drill-reps{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);margin-bottom:3px}
-.drill-why{font-size:12px;color:var(--muted)}
-
-/* CADENCE */
-.measure-row{display:flex;justify-content:center;gap:24px;margin-bottom:14px}
-.m-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;transition:color .1s;position:relative;padding-bottom:4px}
-.m-lbl.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:currentColor;border-radius:1px}
-.cue-word{font-size:64px;font-weight:700;letter-spacing:4px;color:var(--muted);min-height:80px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;transition:color .08s;text-align:center}
-.cue-word.on{text-shadow:0 0 30px currentColor}
-.beat-counter{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-align:center;letter-spacing:2px;margin-top:6px}
-.beat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:18px 0}
-.beat-cell{height:10px;border-radius:3px;background:var(--border);transition:all .08s}
-.shot-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0}
-.shot-num{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:var(--gold)}
-.shot-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
-.wisdom-card{background:rgba(245,196,0,.04);border:1px solid rgba(245,196,0,.15);border-radius:10px;padding:14px;margin-top:14px}
-.wisdom-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:2px;margin-bottom:6px}
-.wisdom-txt{font-size:13px;color:var(--muted);font-style:italic;line-height:1.5}
-
-/* FARGO */
-.fargo-hero{text-align:center;padding:16px 0}
-.fargo-num{font-family:'JetBrains Mono',monospace;font-size:72px;font-weight:700;color:var(--blue);line-height:1}
-.fargo-trend-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-top:4px}
-.pro-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:8px 0}
-.pro-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:4px;transition:width .8s}
-.pro-labels{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
-.fargo-chart{display:flex;align-items:flex-end;gap:4px;height:72px;margin:12px 0}
-.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end}
-.chart-bar{width:100%;border-radius:2px 2px 0 0;min-height:3px}
-.chart-val{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted)}
-.fargo-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:10px}
-.fargo-row-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);flex:1}
-.src-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px}
-.fargo-row-rating{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--blue)}
-
-/* LOG */
-.session-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
-.session-info{flex:1;min-width:0}
-.session-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
-.session-title{font-size:14px;font-weight:600;color:var(--text);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.session-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-top:2px}
-
-/* FIT */
-.phase-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:14px}
-.week-dots{display:flex;gap:4px;flex-wrap:wrap;margin:10px 0}
-.w-dot{width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);transition:all .2s}
-.w-dot.done{background:rgba(0,230,118,.2);color:var(--green)}
-.w-dot.cur{background:var(--blue);color:var(--black);box-shadow:0 0 8px var(--blue)}
-.fit-tabs{display:flex;gap:8px;margin-bottom:14px}
-.f-tab{flex:1;padding:8px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-align:center;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
-.f-tab.active{background:var(--blue);color:var(--black);border-color:var(--blue)}
-.workout-card{background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
-.workout-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.workout-day-name{font-weight:700;font-size:15px}
-.workout-focus{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue)}
-.ex-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
-.ex-row:last-child{border-bottom:none}
-.ex-check{width:22px;height:22px;border:2px solid var(--border);border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
-.ex-check.done{background:var(--green);border-color:var(--green)}
-.ex-check.done::after{content:'✓';font-size:11px;color:var(--black);font-weight:700}
-.ex-name{flex:1;font-size:13px;font-weight:600}
-.ex-sets{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0A0A0F;color:#E0E0F0;font-family:'Courier New',monospace;padding:24px 16px 48px;max-width:420px;margin:0 auto;min-height:100vh}
+h1{font-size:20px;letter-spacing:3px;color:#00BFFF;text-transform:uppercase;margin-bottom:4px}
+.sub{font-size:10px;color:#4A4A6A;letter-spacing:1px;margin-bottom:24px}
+.measure-row{display:flex;justify-content:space-around;margin-bottom:12px}
+.m{font-size:12px;font-weight:bold;color:#4A4A6A;letter-spacing:1px;padding-bottom:3px;border-bottom:2px solid transparent}
+.m.on{border-bottom-color:currentColor}
+#cue{font-size:64px;font-weight:bold;text-align:center;color:#4A4A6A;letter-spacing:4px;min-height:80px;line-height:80px;margin-bottom:8px}
+#binfo{text-align:center;font-size:12px;color:#4A4A6A;letter-spacing:2px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:20px}
+.cell{height:10px;border-radius:3px;background:#1E1E30}
+button{font-family:'Courier New',monospace;cursor:pointer;border:none}
+.btn{display:block;width:100%;padding:16px;border-radius:10px;font-size:14px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.btn:active{opacity:.75;transform:scale(.97)}
+.blue{background:#00BFFF;color:#000}
+.red{background:#FF3D57;color:#fff}
+.ghost{background:transparent;border:1px solid #1E1E30;color:#4A4A6A}
+hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.sbox{background:#141420;border:1px solid #1E1E30;border-radius:10px;padding:12px 6px;text-align:center}
+.sval{font-size:28px;font-weight:bold;display:block}
+.slbl{font-size:9px;color:#4A4A6A;letter-spacing:1px;display:block;margin-top:2px}
+.sbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.made{background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.4);border-radius:10px;color:#00E676;font-size:13px;font-weight:bold;letter-spacing:1px;padding:20px 10px;cursor:pointer;line-height:1.4;font-family:'Courier New',monospace;width:100%}
+.miss{background:rgba(255,61,87,.1);border:1px solid rgba(255,61,87,.3);border-radius:10px;color:#FF3D57;font-size:13px;font-weight:bold;letter-spacing:1px;padding:20px 10px;cursor:pointer;line-height:1.4;font-family:'Courier New',monospace;width:100%}
+.made:active,.miss:active{opacity:.7;transform:scale(.96)}
+.pbar{height:8px;background:#1E1E30;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.pfill{height:100%;background:linear-gradient(90deg,#00BFFF,#00E676);border-radius:4px;width:0%;transition:width .4s}
+.rinfo{display:flex;justify-content:space-between;font-size:10px;color:#4A4A6A;letter-spacing:1px;margin-bottom:14px}
+.wcard{background:rgba(245,196,0,.04);border:1px solid rgba(245,196,0,.15);border-radius:10px;padding:14px;margin-top:24px}
+.wlbl{font-size:9px;color:#F5C400;letter-spacing:2px;margin-bottom:6px}
+.wtxt{font-size:13px;color:#4A4A6A;font-style:italic;line-height:1.5}
+.wnxt{background:none;border:none;font-size:10px;color:#4A4A6A;letter-spacing:1px;cursor:pointer;font-family:'Courier New',monospace;margin-top:8px;padding:0}
 </style>
 </head>
 <body>
-<div id="app">
-<div id="views">
 
-<!-- COACH -->
-<div class="view active" id="view-coach">
-  <div class="page-header">
-    <div class="header-row">
-      <div><div class="page-title">⚡ Flash Coach</div><div class="page-sub">AI video analysis · gemini 2.5</div></div>
-      <div class="icon-btn" onclick="showSheet('api-sheet')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      </div>
-    </div>
-  </div>
-  <div id="api-notice">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    Add your Gemini API key in settings (⚙) to enable Flash Coach
-  </div>
-  <div class="card">
-    <div class="card-title">YouTube Session URL</div>
-    <input type="url" id="yt-url" class="input" placeholder="https://youtube.com/watch?v=..." style="margin-bottom:10px">
-    <div class="card-title">Session Context (optional)</div>
-    <textarea id="s-notes" class="input" rows="2" placeholder="What were you working on?"></textarea>
-  </div>
-  <button class="btn btn-blue" id="analyze-btn" onclick="runAnalysis()" style="margin-bottom:14px">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    ANALYZE WITH FLASH COACH
-  </button>
-  <div class="error-box" id="err-box"></div>
-  <div class="loading-box" id="load-box">
-    <div class="pulse-ring"></div>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue);letter-spacing:2px">ANALYZING...</div>
-    <div id="load-steps" style="margin-top:14px"></div>
-  </div>
-  <div id="results-box" style="display:none"></div>
-  <div id="coach-recent">
-    <div class="section-header">Recent Sessions</div>
-    <div id="coach-recent-list"></div>
-    <div id="coach-empty" style="text-align:center;padding:24px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">No sessions yet</div>
-  </div>
+<h1>⚡ FGP Cadence</h1>
+<div class="sub">briesath rhythm · 60 bpm · 4/4 · 16 beats</div>
+
+<div class="measure-row">
+  <div class="m" id="m1">M1</div>
+  <div class="m" id="m2">M2</div>
+  <div class="m" id="m3">M3</div>
+  <div class="m" id="m4">M4</div>
 </div>
 
-<!-- CADENCE -->
-<div class="view" id="view-cadence">
-  <div class="page-header">
-    <div class="page-title">Stroke Cadence</div>
-    <div class="page-sub">briesath rhythm · 60 bpm · 4/4 · 16 beats</div>
-  </div>
-  <div class="card">
-    <div style="text-align:center;padding:8px 0 4px">
-      <div class="measure-row">
-        <div class="m-lbl" id="ml1">M1</div><div class="m-lbl" id="ml2">M2</div>
-        <div class="m-lbl" id="ml3">M3</div><div class="m-lbl" id="ml4">M4</div>
-      </div>
-      <div class="cue-word" id="cue-word">READY</div>
-      <div class="beat-counter" id="beat-ctr">60 BPM · TAP START</div>
-    </div>
-    <div class="beat-grid" id="beat-grid"></div>
-    <div class="shot-row">
-      <div><div class="shot-num" id="shot-ct">0</div><div class="shot-lbl">SHOTS</div></div>
-    </div>
-    <button class="btn btn-blue" id="cad-btn" onclick="toggleCadence()" style="margin-bottom:8px">▶ START</button>
-    <button class="btn btn-ghost" id="cad-reset" onclick="resetShots()" style="display:none">↺ RESET COUNT</button>
-  </div>
-  <div class="wisdom-card">
-    <div class="wisdom-lbl">⚡ FLASH COACH SAYS</div>
-    <div class="wisdom-txt" id="wisdom"></div>
-    <button onclick="nextWisdom()" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:8px">↻ NEXT</button>
-  </div>
-  <div class="card" style="margin-top:8px">
-    <div class="card-title">Routine Reference</div>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:var(--muted)">
-      <div><span style="color:var(--blue)">M1</span> &nbsp;Step · Set · Down · Settle</div>
-      <div><span style="color:var(--blue)">M2</span> &nbsp;Hold · Hold · Back · Forward</div>
-      <div><span style="color:var(--gold)">M3</span> &nbsp;Back · Forward · Back · Forward</div>
-      <div><span style="color:var(--green)">M4</span> &nbsp;Back · Back · Shoot · Hold</div>
-    </div>
-  </div>
+<div id="cue">READY</div>
+<div id="binfo">60 BPM · TAP START</div>
+
+<div class="grid" id="grid"></div>
+
+<button class="btn blue" id="sbtn" onclick="toggle()">&#9654; START</button>
+<button class="btn ghost" id="rbtn" onclick="resetCycles()" style="display:none">&#8635; RESET CYCLES</button>
+<div style="text-align:center;font-size:11px;color:#4A4A6A;margin-top:4px;letter-spacing:1px">
+  Cycles: <span id="cyc" style="color:#F5C400">0</span>
 </div>
 
-<!-- FARGO -->
-<div class="view" id="view-fargo">
-  <div class="page-header">
-    <div class="page-title">Fargo Tracker</div>
-    <div class="page-sub">wpa app rated · 3-year pro timeline</div>
-  </div>
-  <div class="card">
-    <div class="fargo-hero">
-      <div class="fargo-num" id="fargo-num">640</div>
-      <div class="fargo-trend-lbl" id="fargo-trend">WPB APP RATED · STABLE</div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:4px">
-      <span id="gap-lbl">110 pts to pro</span><span style="color:var(--gold)">750 PRO</span>
-    </div>
-    <div class="pro-track"><div class="pro-fill" id="pro-fill"></div></div>
-    <div class="pro-labels"><span>500</span><span>600</span><span>700</span><span>750+</span></div>
-  </div>
-  <div class="stat-row">
-    <div class="stat-box"><span class="stat-val" id="f-official">—</span><span class="stat-lbl">OFFICIAL</span></div>
-    <div class="stat-box"><span class="stat-val" id="f-ai">—</span><span class="stat-lbl">AI EST.</span></div>
-    <div class="stat-box"><span class="stat-val" style="color:var(--gold)">750</span><span class="stat-lbl">TARGET</span></div>
-  </div>
-  <div class="card">
-    <div class="card-title">History</div>
-    <div class="fargo-chart" id="f-chart"></div>
-    <div id="f-list"></div>
-    <div id="f-empty" style="text-align:center;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">No entries yet</div>
-  </div>
-  <button class="btn btn-gold" onclick="showSheet('fargo-sheet')">+ LOG FARGO RATING</button>
+<hr>
+
+<div style="font-size:10px;letter-spacing:2px;color:#4A4A6A;text-transform:uppercase;margin-bottom:12px">Shot Counter</div>
+
+<div class="sgrid">
+  <div class="sbox"><span class="sval" id="smade" style="color:#00E676">0</span><span class="slbl">MADE</span></div>
+  <div class="sbox"><span class="sval" id="satt" style="color:#00BFFF">0</span><span class="slbl">ATTEMPTS</span></div>
+  <div class="sbox"><span class="sval" id="spct" style="color:#F5C400">&#8212;</span><span class="slbl">PCT</span></div>
 </div>
 
-<!-- LOG -->
-<div class="view" id="view-log">
-  <div class="page-header">
-    <div class="header-row">
-      <div><div class="page-title">Session Log</div><div class="page-sub">practice history</div></div>
-      <div class="icon-btn" onclick="showSheet('log-sheet')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </div>
-    </div>
-  </div>
-  <div class="stat-row">
-    <div class="stat-box"><span class="stat-val" id="l-total">0</span><span class="stat-lbl">TOTAL</span></div>
-    <div class="stat-box"><span class="stat-val" id="l-streak">0</span><span class="stat-lbl">STREAK</span></div>
-    <div class="stat-box"><span class="stat-val" id="l-hours">0</span><span class="stat-lbl">HOURS</span></div>
-  </div>
-  <div class="card">
-    <div id="s-list"></div>
-    <div id="s-empty" style="text-align:center;padding:24px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">No sessions logged yet</div>
-  </div>
+<div class="pbar"><div class="pfill" id="pfill"></div></div>
+<div class="rinfo">
+  <div>Current run: <span id="srun" style="color:#00BFFF">0</span></div>
+  <div>Best run: <span id="sbest" style="color:#F5C400">0</span></div>
 </div>
 
-<!-- FIT -->
-<div class="view" id="view-fit">
-  <div class="page-header">
-    <div class="page-title">FGP Fit</div>
-    <div class="page-sub">12-week return to fitness · pool-specific</div>
-  </div>
-  <div id="fit-phase-pill" class="phase-pill"></div>
-  <div class="card">
-    <div class="card-title">12-Week Progress</div>
-    <div class="week-dots" id="week-dots"></div>
-    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px">
-      <span>FOUNDATION</span><span>BUILD</span><span>PEAK</span>
-    </div>
-  </div>
-  <div class="fit-tabs">
-    <div class="f-tab active" id="ft-today" onclick="fitTab('today')">TODAY</div>
-    <div class="f-tab" id="ft-week" onclick="fitTab('week')">WEEK</div>
-    <div class="f-tab" id="ft-program" onclick="fitTab('program')">PROGRAM</div>
-  </div>
-  <div id="fit-today"></div>
-  <div id="fit-week" style="display:none"></div>
-  <div id="fit-program" style="display:none"></div>
+<div class="sbtns">
+  <button class="made" onclick="shot(true)">&#10003; MADE<br><span style="font-size:10px;font-weight:normal;opacity:.7">tap after pocket</span></button>
+  <button class="miss" onclick="shot(false)">&#10007; MISS<br><span style="font-size:10px;font-weight:normal;opacity:.7">tap on miss</span></button>
 </div>
 
-</div><!-- /views -->
+<button class="btn ghost" onclick="resetShots()">&#8635; RESET SHOT COUNTER</button>
 
-<!-- NAV -->
-<nav id="nav">
-  <button class="nav-btn active" id="nav-coach" onclick="showView('coach')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-    <span>COACH</span>
-  </button>
-  <button class="nav-btn" id="nav-cadence" onclick="showView('cadence')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-    <span>CADENCE</span>
-  </button>
-  <button class="nav-btn" id="nav-fargo" onclick="showView('fargo')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    <span>FARGO</span>
-  </button>
-  <button class="nav-btn" id="nav-log" onclick="showView('log')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-    <span>LOG</span>
-  </button>
-  <button class="nav-btn" id="nav-fit" onclick="showView('fit')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-    <span>FIT</span>
-  </button>
-</nav>
-</div>
-
-<!-- SHEETS -->
-<div class="sheet-overlay" id="api-sheet" onclick="closeSheet('api-sheet')">
-  <div class="sheet" onclick="event.stopPropagation()">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Settings</div>
-    <div class="card-title">Gemini API Key</div>
-    <input type="password" id="api-in" class="input" placeholder="AIza..." style="margin-bottom:8px">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.6">
-      Free at <span style="color:var(--blue)">aistudio.google.com</span> — stored locally only.
-    </div>
-    <button class="btn btn-blue" onclick="saveKey()" style="margin-bottom:8px">SAVE KEY</button>
-    <button class="btn btn-ghost" onclick="closeSheet('api-sheet')">CANCEL</button>
-  </div>
-</div>
-
-<div class="sheet-overlay" id="fargo-sheet" onclick="closeSheet('fargo-sheet')">
-  <div class="sheet" onclick="event.stopPropagation()">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Log Fargo Rating</div>
-    <div style="text-align:center;padding:12px 0">
-      <div id="f-slider-val" style="font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:700;color:var(--blue)">640</div>
-      <input type="range" id="f-slider" min="400" max="800" value="640" step="1"
-        style="width:100%;accent-color:var(--blue);margin:8px 0"
-        oninput="document.getElementById('f-slider-val').textContent=this.value">
-    </div>
-    <div class="card-title">Source</div>
-    <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button id="src-official" onclick="setSrc('official')" style="flex:1;padding:10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:rgba(0,230,118,.15);border:1px solid var(--green);color:var(--green)">OFFICIAL</button>
-      <button id="src-ai" onclick="setSrc('ai')" style="flex:1;padding:10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--muted)">AI EST.</button>
-      <button id="src-self" onclick="setSrc('self')" style="flex:1;padding:10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--muted)">SELF</button>
-    </div>
-    <input type="text" id="f-note" class="input" placeholder="Tournament or context..." style="margin-bottom:14px">
-    <button class="btn btn-gold" onclick="saveFargo()" style="margin-bottom:8px">SAVE ENTRY</button>
-    <button class="btn btn-ghost" onclick="closeSheet('fargo-sheet')">CANCEL</button>
-  </div>
-</div>
-
-<div class="sheet-overlay" id="log-sheet" onclick="closeSheet('log-sheet')">
-  <div class="sheet" onclick="event.stopPropagation()">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Log Session</div>
-    <div class="card-title">Duration</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px">
-      <button onclick="adjDur(-15)" style="font-size:28px;color:var(--blue);width:40px;height:40px">−</button>
-      <div id="dur-val" style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:var(--text);width:80px;text-align:center">60</div>
-      <button onclick="adjDur(15)" style="font-size:28px;color:var(--blue);width:40px;height:40px">+</button>
-    </div>
-    <div class="card-title">Rating</div>
-    <div id="star-row" style="display:flex;gap:10px;justify-content:center;font-size:28px;margin-bottom:14px">
-      <span onclick="setRating(1)" style="cursor:pointer">★</span><span onclick="setRating(2)" style="cursor:pointer">★</span>
-      <span onclick="setRating(3)" style="cursor:pointer">★</span><span onclick="setRating(4)" style="cursor:pointer">★</span>
-      <span onclick="setRating(5)" style="cursor:pointer">★</span>
-    </div>
-    <input type="text" id="log-title" class="input" placeholder="Session title..." style="margin-bottom:8px">
-    <textarea id="log-notes" class="input" rows="2" placeholder="Notes..." style="margin-bottom:14px"></textarea>
-    <button class="btn btn-blue" onclick="saveLog()" style="margin-bottom:8px">SAVE SESSION</button>
-    <button class="btn btn-ghost" onclick="closeSheet('log-sheet')">CANCEL</button>
-  </div>
+<div class="wcard">
+  <div class="wlbl">&#9889; FLASH COACH SAYS</div>
+  <div class="wtxt" id="wtxt"></div>
+  <button class="wnxt" onclick="nextW()">&#8635; NEXT</button>
 </div>
 
 <script>
-// ── STATE ──
-const S = {
-  key: localStorage.getItem('fgp_key') || '',
-  fargo: JSON.parse(localStorage.getItem('fgp_fargo')||'[]'),
-  sessions: JSON.parse(localStorage.getItem('fgp_sessions')||'[]'),
-  coach: JSON.parse(localStorage.getItem('fgp_coach')||'[]'),
-  fit: JSON.parse(localStorage.getItem('fgp_fit')||'{"week":1,"done":{}}'),
-  fargoSrc: 'official',
-  dur: 60,
-  rating: 3,
-};
-const save = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
-
-// ── NAV ──
-function showView(n) {
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('view-'+n).classList.add('active');
-  document.getElementById('nav-'+n).classList.add('active');
-  if(n==='fargo') renderFargo();
-  if(n==='log') renderLog();
-  if(n==='fit') renderFit();
-  if(n==='coach') renderCoachRecent();
-}
-
-// ── SHEETS ──
-function showSheet(id) {
-  if(id==='api-sheet') document.getElementById('api-in').value = S.key;
-  if(id==='fargo-sheet') {
-    const r = S.fargo[0]?.rating||640;
-    document.getElementById('f-slider').value = r;
-    document.getElementById('f-slider-val').textContent = r;
-  }
-  if(id==='log-sheet') { renderStars(S.rating); document.getElementById('dur-val').textContent=S.dur; }
-  document.getElementById(id).classList.add('active');
-}
-function closeSheet(id) { document.getElementById(id).classList.remove('active'); }
-function saveKey() {
-  S.key = document.getElementById('api-in').value.trim();
-  localStorage.setItem('fgp_key', S.key);
-  document.getElementById('api-notice').classList.toggle('hidden', !!S.key);
-  closeSheet('api-sheet');
-}
-
-// ── COACH ──
-const MODEL = 'gemini-2.5-flash';
-const PROMPT = `You are Flash Coach — an elite AI billiards coach for Flash Gordon Pool.
-
-PLAYER: Scott "Flash Gordon" Gordon, Fargo ~640 rising, goal 750+ pro.
-Orthodox stroke rebuild (from forward slip stroke). Briesath rhythm routine, 60 BPM.
-Equipment: McDermott H1752, Defy carbon shaft, Brunswick Gold Crown IV 9ft, Simonis 870.
-
-Analyze the video honestly. Connect all feedback to the 3-year pro timeline.
-Be direct, warm, authoritative. Reference specific shots/moments.
-
-Return ONLY valid JSON:
-{
-  "sessionSummary":"string",
-  "overallScore":1-100,
-  "overallGrade":"A+/A/A-/B+/B/B-/C+/C/C-/D/F",
-  "fargoEstimate":{"rating":int,"range":"string","trend":"Rising/Stable/Declining/Surging","confidence":"Low/Medium/High","toNextTier":"string"},
-  "scorecard":{"preShot":1-10,"stance":1-10,"bridge":1-10,"stroke":1-10,"followThrough":1-10,"cueBallControl":1-10,"positionPlay":1-10,"safetyPlay":1-10,"speedControl":1-10,"mentalGame":1-10},
-  "strengths":[{"title":"string","detail":"string"}],
-  "improvements":[{"title":"string","detail":"string","priority":1-3}],
-  "jerryNarrative":"3-5 paragraphs personal coaching feedback",
-  "practicePrescription":{"focus":"string","drills":[{"name":"string","reps":"string","why":"string"}],"mentalCue":"string"},
-  "proTimelineNote":"string"
-}`;
-
-const LOAD_MSGS = [
-  'Sending video to Flash Coach...','Analyzing stroke mechanics...',
-  'Checking pre-shot routine...','Evaluating position play...',
-  'Estimating Fargo rating...','Writing coaching report...'
+var BEATS=[
+  {m:1,b:1,l:'STEP',v:'Step',c:'#00BFFF'},
+  {m:1,b:2,l:'SET',v:'Set',c:'#00BFFF'},
+  {m:1,b:3,l:'DOWN',v:'Down',c:'#00BFFF'},
+  {m:1,b:4,l:'SETTLE',v:null,c:'#4A4A6A'},
+  {m:2,b:1,l:'HOLD',v:null,c:'#4A4A6A'},
+  {m:2,b:2,l:'HOLD',v:null,c:'#4A4A6A'},
+  {m:2,b:3,l:'BACK',v:'Back',c:'#F5C400'},
+  {m:2,b:4,l:'FORWARD',v:'Forward',c:'#F5C400'},
+  {m:3,b:1,l:'BACK',v:'Back',c:'#F5C400'},
+  {m:3,b:2,l:'FORWARD',v:'Forward',c:'#F5C400'},
+  {m:3,b:3,l:'BACK',v:'Back',c:'#F5C400'},
+  {m:3,b:4,l:'FORWARD',v:'Forward',c:'#F5C400'},
+  {m:4,b:1,l:'BACK',v:'Back',c:'#F5C400'},
+  {m:4,b:2,l:'BACK',v:'Back',c:'#F5C400'},
+  {m:4,b:3,l:'SHOOT',v:'Shoot',c:'#00E676'},
+  {m:4,b:4,l:'HOLD',v:null,c:'#4A4A6A'}
 ];
-const SC_LABELS = {preShot:'Pre-Shot Routine',stance:'Stance & Alignment',bridge:'Bridge & Grip',stroke:'Stroke Mechanics',followThrough:'Follow-Through',cueBallControl:'Cue Ball Control',positionPlay:'Position Play',safetyPlay:'Safety Play',speedControl:'Speed Control',mentalGame:'Mental Game'};
 
-let loadTick=null, loadIdx=0;
-
-function startLoad() {
-  const steps = document.getElementById('load-steps');
-  steps.innerHTML = LOAD_MSGS.map(m=>`<div class="loading-step">${m}</div>`).join('');
-  steps.children[0].classList.add('active');
-  loadIdx=0;
-  loadTick = setInterval(()=>{
-    if(loadIdx < steps.children.length-1) {
-      steps.children[loadIdx].classList.remove('active');
-      steps.children[loadIdx].classList.add('done');
-      loadIdx++;
-      steps.children[loadIdx].classList.add('active');
-    }
-  }, 3500);
-}
-function stopLoad() { clearInterval(loadTick); }
-
-async function runAnalysis() {
-  const url = document.getElementById('yt-url').value.trim();
-  const notes = document.getElementById('s-notes').value.trim();
-  if(!url) { showErr('Please enter a YouTube URL'); return; }
-  if(!S.key) { showErr('Add your Gemini API key in settings (⚙)'); return; }
-  hideErr();
-  document.getElementById('results-box').style.display='none';
-  document.getElementById('coach-recent').style.display='none';
-  document.getElementByIdload-box').classList.add('active');
-  document.getElementById('analyze-btn').disabled=true;
-  startLoad();
-
-  const prevGrade = S.coach[0] ? `Previous session: ${S.coach[0].grade}, Fargo ~${S.coach[0].fargo||640}` : 'First analyzed session.';
-  const userPrompt = `Analyze: ${url}\n${notes?`Notes: "${notes}"\n`:''}${prevGrade}\n\nReturn JSON only.`;
-
-  try {
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${S.key}`,
-      { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          system_instruction:{parts:[{text:PROMPT}]},
-          contents:[{role:'user',parts:[{text:userPrompt}]}],
-          generationConfig:{temperature:0.7,maxOutputTokens:4000,responseMimeType:'application/json'}
-        })
-      }
-    );
-    const data = await resp.json();
-    if(!resp.ok) throw new Error(data.error?.message||`API error ${resp.status}`);
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text||'';
-    const a = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    stopLoad();
-    document.getElementById('load-box').classList.remove('active');
-    const entry = {id:Date.now(),date:new Date().toISOString(),url,videoID:getVID(url),notes,grade:a.overallGrade,score:a.overallScore,fargo:a.fargoEstimate?.rating||null,summary:a.sessionSummary,a};
-    S.coach.unshift(entry);
-    S.coach = S.coach.slice(0,20);
-    save('fgp_coach',S.coach);
-    if(a.fargoEstimate?.rating) {
-      S.fargo.unshift({id:Date.now(),date:new Date().toISOString(),rating:a.fargoEstimate.rating,source:'ai',note:`Flash Coach · ${a.overallGrade}`});
-      save('fgp_fargo',S.fargo);
-    }
-    renderResults(a);
-    document.getElementById('analyze-btn').disabled=false;
-    document.getElementById('coach-recent').style.display='block';
-  } catch(e) {
-    stopLoad();
-    document.getElementById('load-box').classList.remove('active');
-    document.getElementById('analyze-btn').disabled=false;
-    document.getElementById('coach-recent').style.isplay='block';
-    showErr(e.message||'Analysis failed. Check your API key.');
-  }
-}
-
-function getVID(url) { return (url.match(/(?:v=|youtu\.be\/)([^&\s]+)/)||[])[1]||''; }
-function gc(g) { return g?.startsWith('A')?'var(--green)':g?.startsWith('B')?'var(--blue)':g?.startsWith('C')?'var(--gold)':'var(--red)'; }
-function sc(s) { return s>=8?'var(--green)':s>=6?'var(--blue)':s>=5?'var(--gold)':'var(--red)'; }
-
-function renderResults(a) {
-  const f=a.fargoEstimate||{}, sc_=a.scorecard||{}, p=a.practicePrescription||{};
-  let h=`<div class="fade-in">`;
-  // Grade
-  h+=`<div class="card" style="border-color:${gc(a.overallGrade)}30">
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:64px;font-weight:700;color:${gc(a.overallGrade)};line-height:1">${a.overallGrade||'—'}</div>
-      <div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700">${a.overallScore||0}<span style="font-size:1x;color:var(--muted)">/100</span></div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">FARGO ~${f.rating||'—'}</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)">${f.trend||''} · ${f.confidence||''}</div>
-      </div>
-    </div>
-    <div style="font-size:13px;line-height:1.6;color:var(--text)">${a.sessionSummary||''}</div>
-  </div>`;
-  // Scorecard
-  if(Object.keys(sc_).length) {
-    h+=`<div class="card"><div cs="card-title">Scorecard</div>`;
-    Object.entries(sc_).forEach(([k,v])=>{
-      const score=typeof v==='object'?(v.score||0):(v||0);
-      const label=typeof v==='object'&&v.label?v.label:(SC_LABELS[k]||k);
-      h+=`<div class="score-row"><div class="score-label">${label}</div><div class="score-track"><div class="score-fill" style="width:${score*10}%;background:${sc(score)}"></div></div><div class="score-num" style="color:${sc(score)}">${score}</div></div>`;
-    });
-    h+=`</div>`;
-  }
-  // Strengths
-  if((a.strengths||[]).length) {
-    h+=`<div class="card"><div class="card-title">Strengths</div>`;
-    a.strengths.forEach(s=>{ h+=`<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)"><div style="font-weight:700;font-size:14px;color:var(--green);margin-bottom:3px">${s.title}</div><div style="font-size:12px;color:var(--muted)">${s.detail}</div></div>`; });
-    h+=`</div>`;
-  }
-  // Improvements
-  if((a.improvements||[]).length) {
-    const pc={1:'var(--red)',2:'var(--gold)',3:'var(--blue)'}, pl={1:'URGENT',2:'FOCUS',3:'REFINE'};
-    h+=`<div class="card"><div class="card-title">Areas to Improve</div>`;
-    [...a.improvements].sort((x,y)=>(x.priority||3)-(y.priority||3)).forEach(i=>{
-      h+=`<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:${pc[i.priority]||'var(--muted)'};border:1px solid ${pc[i.priority]||'var(--muted)'};border-radius:3px;padding:1px 5px">${pl[i.priority]||'NOTE'}</span><span style="font-weight:700;font-size:14px">${i.title}</span></div><div style="font-size:12px;color:var(--muted)">${i.detail}</div></div>`;
-    });
-    h+=`</div>`;
-  }
-  // Narrative
-  if(a.jerryNarrative) h+=`<div class="card"><div class="card-title">Flash Coach Says</div><div style="font-size:14px;line-height:1.7;white-space:pre-wrap">${a.jerryNarrative}</div></div>`;
-  // Prescription
-  if(p.focus||(p.drills||[]).length) {
-    h+=`<div class="card" style="border-color:rgba(245,196,0,.2)"><div class="card-title">Practice Prescription</div>`;
-    if(p.focus) h+=`<div style="background:rgba(245,196,0,.06);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:10px;margin-bottom:12px"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);margin-bottom:3px">FOCUS</div><div style="font-size:13px;font-weight:600">${p.focus}</div></div>`;
-    (p.drills||[]).forEach(d=>{ h+=`<div class="drill-item"><div class="drill-name">${d.name}</div><div class="drill-reps">${d.reps||''}</div><div class="drill-why">${d.why||''}</div></div>`; });
-    if(p.mentalCue) h+=`<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);text-align:center;font-style:italic;margin-top:8px">"${p.mentalCue}"</div>`;
-    h+=`</div>`;
-  }
-  if(a.proTimelineNote) h+=`<div class="card"><div class="card-title">Pro Timeline</div><div style="font-size:13px;line-height:1.6">${a.proTimelineNote}</div></div>`;
-  h+=`</div>`;
-  const el=document.getElementById('results-box');
-  el.innerHTML=h; el.style.display='block';
-}
-
-function renderCoachRecent() {
-  const list=document.getElementById('coach-recent-list'), empty=document.getElementById('coach-empty');
-  if(!S.coach.length){list.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  list.innerHTML=S.coach.slice(0,5).map(s=>`<div class="session-row">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${gc(s.grade)};width:36px;text-align:center">${s.grade}</div>
-    <div class="session-info">
-      <div class="session-date">${fmtDate(s.date)}</div>
-      <div class="session-title">${s.summary||'Session'}</div>
-      <div class="session-meta">Fargo ~${s.fargo||'—'} · ${s.score||0}/100</div>
-    </div></div>`).join('');
-}
-
-function showErr(m){const e=document.getElementById('err-box');e.textContent=m;e.classList.add('active');}
-function hideErr(){document.getElementById('err-box')assList.remove('active');}
-
-// ── CADENCE ──
-const BEATS=[
-  {m:1,b:1,l:'STEP',v:'Step',c:'var(--blue)',s:true},
-  {m:1,b:2,l:'SET',v:'Set',c:'var(--blue)',s:true},
-  {m:1,b:3,l:'DOWN',v:'Down',c:'var(--blue)',s:true},
-  {m:1,b:4,l:'SETTLE',v:null,c:'var(--muted)',s:false},
-  {m:2,b:1,l:'HOLD',v:null,c:'var(--muted)',s:false},
-  {m:2,b:2,l:'HOLD',v:null,c:'var(--muted)',s:false},
-  {m:2,b:3,l:'BACK',v:'Back',c:'var(--gold)',s:true},
-  {m:2,b:4,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
-  {m:3,ACK',v:'Back',c:'var(--gold)',s:true},
-  {m:3,b:2,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
-  {m:3,b:3,l:'BACK',v:'Back',c:'var(--gold)',s:true},
-  {m:3,b:4,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
-  {m:4,b:1,l:'BACK',v:'Back',c:'var(--gold)',s:true},
-  {m:4,b:2,l:'BACK',v:'Back',c:'var(--gold)',s:true},
-  {m:4,b:3,l:'SHOOT',v:'Shoot',c:'var(--green)',s:true},
-  {m:4,b:4,l:'HOLD',v:null,c:'var(--muted)',s:false},
-];
-const WISDOM=[
-  'Every shot the same. Every time.','Routine is your armor.',
+var W=[
+  'Every shot the same. Every time.',
   'The stroke is a pendulum. Elbow pivots. Nothing else moves.',
-  'Speed control is 60% of position play.','Settle at the cue ball. Don\'t rush.',
-  'Eyes on the object ball at contact.','Follow-through is not optional.',
-  'Commit before you get down.','Safety play is strategic offense.',
+  'Settle at the cue ball. Do not rush the backswing.',
+  'Eyes on the object ball at contact. Every time.',
+  'Follow-through is not optional. Finish through the ball.',
+  'Speed control is 60% of position play.',
+  'Commit before you get down. No second-guessing.',
   'The slow backswing separates pros from amateurs.',
-  'One shot at a time.','Hold your finish. Watch the cue ball.',
-  'The comeback nobody saw coming.','Plan two balls ahead. Always.',
+  'One shot at a time. That is all there is.',
+  'Hold your finish. Watch the cue ball.',
   'Your Fargo is built one shot at a time.',
+  'The comeback nobody saw coming.',
+  'Routine is your armor. Wear it every shot.',
+  'Plan two balls ahead. Always.'
 ];
 
-let cadOn=false, cadBeat=0, cadTimer=null, cadShots=0, wIdx=0;
+var on=false,idx=0,tmr=null,cyc=0;
+var made=0,att=0,run=0,best=0,wi=0;
 
-function buildGrid() {
-  document.getElementById('beat-grid').innerHTML = BEATS.map((_,i)=>`<div class="beat-cell" id="bc${i}"></div>`).join('');
-}
+// Build grid
+var g=document.getElementById('grid');
+for(var i=0;i<16;i++){var d=document.createElement('div');d.className='cell';d.id='c'+i;g.appendChild(d);}
 
-function updateGrid(idx) {
-  const b=BEATS[idx];
-  const cue=document.getElementById('cue-word');
-  cue.textContent=b.l; cue.style.color=b.c; cue.classList.toggle('on',cadOn);
-  [1,2,3,4].forEach(m=>{
-    const el=document.getElementById('ml'+m);
-    el.classList.toggle('active',b.m===m);
-    el.style.color=b.m===m?b.c:'var(--muted)';
-  });
-  document.getElementById('beat-ctr').textContent = cadOn?`${b.b}  ·  4`:'60 BPM · TAP START';
-  BEATS.forEach((_,i)=>{
-    const cell=document.getElementById('bc'+i);
-    if(!cell)return;
-    if(i===idx){cell.style.background=b.c;cell.style.height='16px';cell.style.boxShadow=`0 0 8px ${b.c}`;}
-    else if(cadOn&&i<idx){cell.style.background=BEATS[i].c;cell.style.opacity='0.2';cell.style.height='10px';cell.style.boxShadow='none';}
-    else{celltyle.background='var(--border)';cell.style.opacity='1';cell.style.height='10px';cell.style.boxShadow='none';}
-  });
-}
+function toggle(){on?stop():go();}
 
-function speak(w) {
-  if(!w||!window.speechSynthesis)return;
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(w);
-  u.rate=0.9; u.pitch=1.1; u.volume=1;
-  const voices=window.speechSynthesis.getVoices();
-  const v=voices.find(v=>v.lang==='en-US')||voices[0];
-  if(v)u.voice=v;
-  window.speechSynthesis.speak(u);
-}
-
-function fireBeat(idx) {
-  updateGrid(idx);
-  if(BEATS[idx].v) speak(BEATS[idx].v);
-}
-
-function toggleCadence() {
-  if(cadOn){stopCadence();}else{startCadence();}
-}
-function startCadence() {
-  cadOn=true; cadBeat=0;
-  const btn=document.getElementById('cad-btn');
-  btn.textContent='⏹ STOP'; btn.className='btn btn-red';
-  document.getElementById('cad-reset').style.display='none';
-  fireBeat(0);
-  cadTimer=setInterval(()=>{
-    cadBeat=(cadBeat+1)%16;
-    if(cadBeat===0){cadShots++;document.getElementById('shot-ct').textContent=cadShots;nextWisdom();}
-    fireat(cadBeat);
+function go(){
+  on=true; idx=0;
+  document.getElementById('sbtn').innerHTML='&#9646;&#9646; STOP';
+  document.getElementById('sbtn').className='btn red';
+  document.getElementById('rbtn').style.display='none';
+  fire(0);
+  tmr=setInterval(function(){
+    idx=(idx+1)%16;
+    if(idx===0){cyc++;document.getElementById('cyc').textContent=cyc;nextW();}
+    fire(idx);
   },1000);
 }
-function stopCadence() {
-  cadOn=false; clearInterval(cadTimer);
+
+function stop(){
+  on=false; clearInterval(tmr);
   if(window.speechSynthesis)window.speechSynthesis.cancel();
-  const btn=document.getElementById('cad-btn');
-  btn.textContent='▶ START'; btn.className='btn btn-blue';
-  document.getElementById('cad-reset').style.display=cadShots>0?'block':'none';
-  const cue=document.getElementById('cue-word');
-  cue.textContent='READY'; cue.style.color='var(--muted)'; cue.classList.remove('on');
-  document.getElementById('beat-ct).textContent='60 BPM · TAP START';
-  BEATS.forEach((_,i)=>{const c=document.getElementById('bc'+i);if(c){c.style.background='var(--border)';c.style.height='10px';c.style.boxShadow='none';c.style.opacity='1';}});
-  [1,2,3,4].forEach(m=>{const el=document.getElementById('ml'+m);el.classList.remove('active');el.style.color='var(--muted)';});
-}
-function resetShots() { cadShots=0; document.getElementById('shot-ct').textContent='0'; document.getElementById('cad-reset').style.display='none'; }
-function nextWisdo() { wIdx=(wIdx+Math.floor(Math.random()*(WISDOM.length-1))+1)%WISDOM.length; document.getElementById('wisdom').textContent=WISDOM[wIdx]; }
-
-// ── FARGO ──
-function setSrc(s) {
-  S.fargoSrc=s;
-  ['official','ai','self'].forEach(x=>{
-    const btn=document.getElementById('src-'+x);
-    const on=x===s;
-    const c=x==='official'?'var(--green)':x==='ai'?'var(--blue)':'var(--gold)';
-    btn.style.background=on?`${c}20`:'var(--panel)';
-    btn.style.borderColor=on?c:'var(--border)';
-    btn.style.color=o(--muted)';
-  });
-}
-function saveFargo() {
-  S.fargo.unshift({id:Date.now(),date:new Date().toISOString(),rating:parseInt(document.getElementById('f-slider').value),source:S.fargoSrc,note:document.getElementById('f-note').value.trim()});
-  save('fgp_fargo',S.fargo);
-  document.getElementById('f-note').value='';
-  closeSheet('fargo-sheet'); renderFargo();
-}
-function renderFargo() {
-  const entries=S.fargo, latest=entries[0], r=latest?.rating||640;
-  document.getElementById('fargo-num').textContent=r;
-  document.getElementById('gap-lbl').textContent=r>=750?'🏆 PRO REACHED':`${750-r} pts to pro`;
-  document.getElementById('pro-fill').style.width=Math.max(0,Math.min(100,((r-500)/250)*100))+'%';
-  let trend='STABLE';
-  if(entries.length>=2){const d=entries[0].rating-entries[1].rating;if(d>10)trend='SURGING ⚡';else if(d>3)trend='RISING ↑';else if(d<-3)trend='DECLINING ↓';}
-  document.getElementById('fargo-trend').textContent=`WPB APP RATED · ${trend}`;
-  const official=entries.find(e=>e.source==='official'ries.find(e=>e.source==='ai');
-  document.getElementById('f-official').textContent=official?.rating||'—';
-  document.getElementById('f-ai').textContent=ai?.rating||'—';
-  const chart=document.getElementById('f-chart'), empty=document.getElementById('f-empty'), list=document.getElementById('f-list');
-  if(!entries.length){chart.innerHTML='';empty.style.display='block';list.innerHTML='';return;}
-  empty.style.display='none';
-  const cEntries=entries.slice(0,12).reverse();
-  const ratings=cEntries.map(e=>eing), minR=Math.min(...ratings)-15, maxR=Math.max(...ratings)+15;
-  const srcC={official:'var(--green)',ai:'var(--blue)',self:'var(--gold)'};
-  chart.innerHTML=cEntries.map(e=>{
-    const h=((e.rating-minR)/(maxR-minR))*62, c=srcC[e.source]||'var(--blue)';
-    return `<div class="chart-col"><div class="chart-val" style="color:${c}">${e.rating}</div><div class="chart-bar" style="height:${Math.max(3,h)}px;background:${c}"></div></div>`;
-  }).join('');
-  list.innerHTML=entries.slice(0,8).map(e=>{
-    const c=srcC[e.source]||'var(--blue)', sl={official:'OFFICIAL',ai:'AI EST.',self:'SELF'};
-    return `<div class="fargo-row"><div class="fargo-row-date">${fmtDate(e.date)}${e.note?` · ${e.note}`:''}</div><span class="src-tag" style="color:${c};border:1px solid ${c}">${sl[e.source]||'?'}</span><div class="fargo-row-rating" style="color:${c}">${e.rating}</div></div>`;
-  }).join('');
+  document.getElementById('sbtn').innerHTML='&#9654; START';
+  document.getElementById('sbtn').className='btn blue';
+  if(cyc>0)document.getElementById('rbtn').style.display='block';
+  document.getElementById('cue').textContent='READY';
+  document.getElementById('cue').style.color='#4A4A6A';
+  document.getElementById('binfo').textContent='60 BPM · TAP START';
+  for(var i=0;i<16;i++){var c=document.getElementById('c'+i);c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
+  for(var m=1;m<=4;m++){var e=document.getElementById('m'+m);e.style.color='#4A4A6A';e.classList.remove('on');}
 }
 
-// ── LOG ──
-function adjDur(d){S.dur=Math.max(10,Math.min(360,S.dur+d));document.getElementById('dur-val').textContent=S.duron setRating(n){S.rating=n;renderStars(n);}
-function renderStars(n){document.querySelectorAll('#star-row span').forEach((s,i)=>{s.style.color=i<n?'var(--gold)':'var(--muted)';});}
-function saveLog() {
-  S.sessions.unshift({id:Date.now(),date:new Date().toISOString(),title:document.getElementById('log-title').value.trim()||`Session ${fmtDate(new Date().toISOString())}`,duration:S.dur,rating:S.rating,notes:document.getElementById('log-notes').value.trim()});
-  save('fgp_sessions',S.sessions);
-  document.getElementById('log-title').value=''; document.getElementById('log-notes').value='';
-  closeSheet('log-sheet'); renderLog();
-}
-function renderLog() {
-  const ss=S.sessions;
-  document.getElementById('l-total').textContent=ss.length;
-  document.getElementById('l-hours').textContent=Math.round(ss.reduce((a,s)=>a+(s.duration||0),0)/60);
-  let streak=0; const today=new Date(); today.setHours(0,0,0,0);
-  const days=[...new Set(ss.map(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);return d.getTime()}))].sort((a,b)=>b-a);
-  let check=today.getTime();
-  for(const d of days){if(d===check){streak++;check-=86400000;}else if(d<check)break;}
-  document.getElementById('l-streak').textContent=streak;
-  const list=document.getElementById('s-list'), empty=document.getElementById('s-empty');
-  if(!ss.length){list.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  list.innerHTML=ss.map(s=>`<div class="session-row"><div class="session-info"><div class="session-date">${fmtDate(s.date)}</div><div class="session-title">${s.title}</div><div class="session-meta">${'★'.repeat(s.rating||0)}${'☆'.repeat(5-(s.rating||0))} &nbsp;${s.duration||60}min</div></div></div>`).join('');
+function fire(i){
+  var b=BEATS[i];
+  document.getElementById('cue').textContent=b.l;
+  document.getElementById('cue').style.color=b.c;
+  document.getElementById('binfo').textContent=b.b+' \xb7 4';
+  for(var m=1;m<=4;m++){
+    var e=document.getElementById('m'+m);
+    if(b.m===m){e.style.color=b.c;e.classList.add('on');}
+    else{e.style.color='#4A4A6A';e.classList.remove('on');}
+  }
+  for(var j=0;j<16;j++){
+    var c=document.getElementById('c'+j);
+    if(j===i){c.style.background=b.c;c.style.height='18px';c.style.opacity='1';}
+    else if(j<i){c.style.background=BEATS[j].c;c.style.height='10px';c.style.opacity='0.2';}
+    else{c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
+  }
+  if(b.v&&window.speechSynthesis){
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(b.v);
+    u.rate=0.9;u.pitch=1.1;u.volume=1;
+    window.speechSynthesis.speak(u);
+  }
 }
 
-// ── FIT ──
-const PHASES=[
-  {name:'FOUNDATION',weeks:[1,2,3,4],c:'var(--blue)',desc:'Rebuild base fitness. Low intensity, form focus. Pool body mechanics.'},
-  {name:'BUILD',weeks:[5,6,7,8],c:'var(--gold)',desc:'Progressive overload. Core stability and stance endurance.'},
-  {name:'PEAK',weeks:[9,10,11,12],c:'var(--green) conditioning. Match simulation. Full pool-athlete mode.'},
-];
-const DAYS=[
-  {day:'MON',focus:'Upper Body + Core',exercises:[
-    {n:'Push-ups',s:'3×10',note:'Bridge stability'},{n:'Dumbbell rows',s:'3×10',note:'Stroke pull muscles'},
-    {n:'Plank',s:'3×30s',note:'Core for stance'},{n:'Dead bug',s:'3×8',note:'Anti-rotation'},
-    {n:'Band pull-aparts',s:'3×15',note:'Shoulder health'},
-  ]},
-  {day:'TUE',focus:'Cardio + Flexibility',exercises:[
-    {n:'20min walk/jog',s:'1×20min',note:'Zone 2 cardio'Hip flexor stretch',s:'2×30s',note:'Stance freedom'},
-    {n:'Thoracic rotation',s:'2×10',note:'Bridge reach'},{n:'Hamstring stretch',s:'2×30s',note:'Bent-over reach'},
-  ]},
-  {day:'WED',focus:'REST / Pool Practice',exercises:[{n:'Pool session',s:'60-90min',note:'Apply the routine'}]},
-  {day:'THU',focus:'Lower Body + Balance',exercises:[
-    {n:'Bodyweight squats',s:'3×12',note:'Stance strength'},{n:'Lunges',s:'3×8 each',note:'Step-in strength'},
-    {n:'Single-leg balance',s:'3×20s',note:'Address sty'},{n:'Calf raises',s:'3×15',note:'Long session standing'},
-  ]},
-  {day:'FRI',focus:'Core + Grip',exercises:[
-    {n:'Farmer carries',s:'3×30m',note:'Grip endurance'},{n:'Side plank',s:'3×20s each',note:'Lateral stability'},
-    {n:'Wrist curls',s:'3×12',note:'Cue control'},{n:'Reverse wrist curls',s:'3×12',note:'Balance forearm'},
-    {n:'Pallof press',s:'3×10',note:'Anti-rotation core'},
-  ]},
-  {day:'SAT',focus:'Pool + Stretching',exercises:[
-    {n:'Pool session',s:'90-120min',note:'Long sessiorance'},{n:'Full body stretch',s:'15min',note:'Post-session recovery'},
-  ]},
-  {day:'SUN',focus:'FULL REST',exercises:[{n:'Recovery walk',s:'Optional 20min',note:'Active recovery'}]},
-];
+function resetCycles(){cyc=0;document.getElementById('cyc').textContent='0';document.getElementById('rbtn').style.display='none';}
 
-let fitActiveTab='today';
-function fitTab(t) {
-  fitActiveTab=t;
-  ['today','week','program'].forEach(x=>{
-    document.getElementById('ft-'+x).classList.toggle('active',x===t);
-    document.getElementById('fit-'+x).style.display=x===t?'block':'none';
-  });
+function shot(m){
+  att++;
+  if(m){made++;run++;}else{run=0;}
+  if(run>best)best=run;
+  document.getElementById('smade').textContent=made;
+  document.getElementById('satt').textContent=att;
+  var p=att>0?Math.round(made/att*100):0;
+  document.getElementById('spct').textContent=att>0?p+'%':'—';
+  document.getElementById('pfill').style.width=p+'%';
+  document.getElementById('srun').textContent=run;
+  document.getElementById('sbest').textContent=best;
 }
-function renderFit() {
-  const w=S.fit.week||1;
-  const phase=w<=4?PHASES[0]:w<=8?PHASES[1]:PHASES[2];
-  const pill=document.getElementById('fit-phase-pill');
-  pill.innerHTML=`<span style="color:${phase.c}">⚡</span> <span style="color:${phase.c}">PHASE: ${phase.name}</span> <span style="color:var(--muted)">· WEEK ${w}</span>`;
-  pill.style.background=`${phase.c}15`; pill.style.border=`1px solid ${phase.c}30`;
-  // Week dots
-  document.getElementById('week-dots').innerHTML=Array.from({length:12},(_,i)=>{
-    const wn=i+1, pc=wn<=4?'var(--blue)':wn<=8?'var(--gold)':'(--green)';
-    const cls=wn<w?'done':wn===w?'cur':'';
-    return `<div class="w-dot ${cls}" style="${cls==='cur'?`background:${pc};border-color:${pc};box-shadow:0 0 8px ${pc};color:var(--black)`:cls==='done'?`background:${pc}20;color:${pc}`:''}">${wn}</div>`;
-  }).join('');
-  // Today
-  const todayIdx=new Date().getDay()===0?6:new Date().getDay()-1;
-  document.getElementById('fit-today').innerHTML=renderDay(DAYS[todayIdx],`w${w}_d${todayIdx}`);
-  // Week
-  document.getElementById('fit-week').innerHTML=DAYS.map((d,i)=>renderDay(d,`w${w}_d${i}`)).join('');
-  // Program
-  document.getElementById('fit-program').innerHTML=`
-    ${PHASES.map(p=>`<div class="card" style="border-color:${p.c}30"><div style="color:${p.c};font-weight:700;font-size:15px;margin-bottom:6px">PHASE: ${p.name} · Weeks ${p.weeks[0]}-${p.weeks[p.weeks.length-1]}</div><div style="font-size:13px;color:var(--muted)">${p.desc}</div></div>`).join('')}
-    <div class="card"><div class="card-title">Current Week</div>
-    <div style="display:flex;alin-items:center;justify-content:center;gap:16px">
-      <button onclick="adjWeek(-1)" style="font-size:24px;color:var(--blue);width:40px;height:40px">−</button>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--text);width:80px;text-align:center">Week ${w}</div>
-      <button onclick="adjWeek(1)" style="font-size:24px;color:var(--blue);width:40px;height:40px">+</button>
-    </div></div>`;
-}
-function renderDay(d, key) {
-  const done=S.fit.done[key]||{};
-  rern `<div class="workout-card">
-    <div class="workout-hdr"><div class="workout-day-name">${d.day}</div><div class="workout-focus">${d.focus}</div></div>
-    ${d.exercises.map((ex,i)=>`<div class="ex-row">
-      <div class="ex-check ${done[i]?'done':''}" onclick="toggleEx('${key}',${i})"></div>
-      <div class="ex-name" style="${done[i]?'text-decoration:line-through;color:var(--muted)':''}">${ex.n}</div>
-      <div class="ex-sets">${ex.s}</div>
-    </div>`).join('')}
-  </div>`;
-}
-function toggleEx(key,i) {
-  if(!S.fit.done[key])S.fit.done[key]={};
-  S.fit.done[key][i]=!S.fit.done[key][i];
-  save('fgp_fit',S.fit); renderFit(); fitTab(fitActiveTab);
-}
-function adjWeek(d) { S.fit.week=Math.max(1,Math.min(12,(S.fit.week||1)+d)); save('fgp_fit',S.fit); renderFit(); fitTab('program'); }
 
-// ── UTILS ──
-function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function resetShots(){made=0;att=0;run=0;best=0;document.getElementById('smade').textContent=0;document.getElementById('satt').textContent=0;document.getElementById('spct').textContent='—';document.getElementById('pfill').style.width='0%';document.getElementById('srun').textContent=0;document.getElementById('sbest').textContent=0;}
 
-// ── INIT ──
-function init() {
-  document.getElementById('api-notice').classList.toggle('hidden',!!S.key);
-  buildGrid();
-  wIdx=Math.floor(Math.random()*WISDOM.length);
-  document.getElementById('wisdom').textContent=WISDOM[wIdx];
-  document.getElementById('f-slider').value=S.fargo[0]?.rating||640;
-  document.getElementById('f-slider-val').textContent=S.fargo[0]?.rating||640;
-  renderCoachRecent(); renderLog();
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
-  if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
-}
-document.addEventListener('DOMContentLoaded', init);
+function nextW(){var p=wi;while(wi===p)wi=Math.floor(Math.random()*W.length);document.getElementById('wtxt').textContent=W[wi];}
+
+wi=Math.floor(Math.random()*W.length);
+document.getElementById('wtxt').textContent=W[wi];
+if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};}
 </script>
 </body>
 </html>
