@@ -52,8 +52,8 @@ input,textarea{font-family:'JetBrains Mono',monospace}
 .stat-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--blue);display:block}
 .stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;display:block;margin-top:2px}
 .icon-btn{width:36px;height:36px;border-radius:8px;background:var(--panel);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end}
-.sheet-overlay.active{display:flex}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;pointer-events:none}
+.sheet-overlay.active{display:flex;pointer-events:auto}
 .sheet{width:100%;background:var(--dark);border-radius:20px 20px 0 0;border:1px solid var(--border);border-bottom:none;max-height:90vh;overflow-y:auto;padding:20px 16px calc(var(--safe-b) + 20px);animation:sheet-up .25s ease}
 @keyframes sheet-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
@@ -83,12 +83,12 @@ input,textarea{font-family:'JetBrains Mono',monospace}
 #install-banner-text span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);display:block;margin-top:2px}
 
 /* OFFLINE INDICATOR */
-#offline-pill{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:rgba(255,61,87,.9);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 14px;border-radius:20px;z-index:300;display:none;align-items:center;gap:5px}
-#offline-pill.show{display:flex}
+#offline-pill{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:rgba(255,61,87,.9);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 14px;border-radius:20px;z-index:300;display:none;align-items:center;gap:5px;pointer-events:none}
+#offline-pill.show{display:flex;pointer-events:auto}
 
 /* MILESTONE TOAST */
-#milestone-toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);left:16px;right:16px;background:linear-gradient(135deg,rgba(245,196,0,.15),rgba(0,191,255,.1));border:1px solid rgba(245,196,0,.4);border-radius:12px;padding:14px;z-index:300;display:none;align-items:center;gap:10px;animation:toast-in .3s ease}
-#milestone-toast.show{display:flex}
+#milestone-toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);left:16px;right:16px;background:linear-gradient(135deg,rgba(245,196,0,.15),rgba(0,191,255,.1));border:1px solid rgba(245,196,0,.4);border-radius:12px;padding:14px;z-index:300;display:none;align-items:center;gap:10px;animation:toast-in .3s ease;pointer-events:none}
+#milestone-toast.show{display:flex;pointer-events:auto}
 @keyframes toast-in{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .toast-icon{font-size:24px}
 .toast-msg{flex:1;font-size:13px;font-weight:600;color:var(--gold)}
@@ -451,28 +451,28 @@ input,textarea{font-family:'JetBrains Mono',monospace}
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px">
       <button onclick="adjDur(-15)" style="font-size:28px;color:var(--blue);width:40px;height:40px">−</button>
       <div id="dur-val" style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:var(--text);width:80px;text-align:center">60</div>
-      <button onclick="adjDur(15)" style="font-size:28px;color:var(--blue);width:40px;height:40px">+</button>
+      <button onclick="adjDur(15)" style="fonsize:28px;color:var(--blue);width:40px;height:40px">+</button>
     </div>
     <div class="card-title">Rating</div>
     <div id="star-row" style="display:flex;gap:10px;justify-content:center;font-size:28px;margin-bottom:14px">
-      <span onclick="setRating(1)" style="cursor:pnter">★</span><span onclick="setRating(2)" style="cursor:pointer">★</span>
+      <span onclick="setRating(1)" style="cursor:pointer">★</span><span onclick="setRating(2)" style="cursor:pointer">★</span>
       <span onclick="setRating(3)" style="cursor:pointer">★</span><span onclick="setRating(4)" style="cursor:pointer">★</span>
-      <span onclick="setRating(5)" style="cursor:pointer">★</span>
+      <span onclick="set)" style="cursor:pointer">★</span>
     </div>
     <input type="text" id="log-title" class="input" placeholder="Session title..." style="margin-bottom:8px">
-    <textarea id="log-notes" class="input" rows="2" placeholder="Notes..." style="margin-bottom:14px"></textareaton class="btn btn-blue" onclick="saveLog()" style="margin-bottom:8px">SAVE SESSION</button>
+    <textarea id="log-notes" class="input" rows="2" placeholder="Notes..." style="margin-bottom:14px"></textarea>
+    <button class="btn btn-blue" onclick="saveLog()" style="margin-bottom:8px">SAVE SESSION</button>
     <button class="btn btn-ghost" onclick="closeSheet('log-sheet')">CANCEL</button>
   </div>
 </div>
 
 <script>
 // ── STATE ──
-const S = {
-  key: localStorage.getItem('fgp_key') || '',
+const y: localStorage.getItem('fgp_key') || '',
   fargo: JSON.parse(localStorage.getItem('fgp_fargo')||'[]'),
   sessions: JSON.parse(localStorage.getItem('fgp_sessions')||'[]'),
   coach: JSON.parse(localStorage.getItem('fgp_coach')||'[]'),
-  fit: JSON.parse(localStorage.getItfit')||'{"week":1,"done":{}}'),
+  fit: JSON.parse(localStorage.getItem('fgp_fit')||'{"week":1,"done":{}}'),
   fargoSrc: 'official',
   dur: 60,
   rating: 3,
@@ -481,12 +481,12 @@ const save = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
 // ── NAV ──
 function showView(n) {
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.view').forEaclassList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+n).classList.add('active');
   document.getElementById('nav-'+n).classList.add('active');
   if(n==='fargo') renderFargo();
-  ifg') renderLog();
+  if(n==='log') renderLog();
   if(n==='fit') renderFit();
   if(n==='coach') renderCoachRecent();
 }
@@ -494,13 +494,12 @@ function showView(n) {
 // ── SHEETS ──
 function showSheet(id) {
   if(id==='api-sheet') document.getElementById('api-in').value = S.key;
-  if(id==='fargo-sheet') {
-    const r = S.fargo[0]?.rating||640;
+  if(id==='fargo-sheet') nst r = S.fargo[0]?.rating||640;
     document.getElementById('f-slider').value = r;
     document.getElementById('f-slider-val').textContent = r;
   }
   if(id==='log-sheet') { renderStars(S.rating); document.getElementById('dur-val').textContent=S.dur; }
-  document.getEle(id).classList.add('active');
+  document.getElementById(id).classList.add('active');
 }
 function closeSheet(id) { document.getElementById(id).classList.remove('active'); }
 function saveKey() {
@@ -514,11 +513,11 @@ function saveKey() {
 const MODEL = 'gemini-2.5-flash';
 const PROMPT = `You are Flash Coach — an elite AI billiards coach for Flash Gordon Pool.
 
-PLAYER: Scott "FlasGordon, Fargo ~640 rising, goal 750+ pro.
+PLAYER: Scott "Flash Gordon" Gordon, Fargo ~640 rising, goal 750+ pro.
 Orthodox stroke rebuild (from forward slip stroke). Briesath rhythm routine, 60 BPM.
 Equipment: McDermott H1752, Defy carbon shaft, Brunswick Gold Crown IV 9ft, Simonis 870.
 
-Analyze the video honestly. Connect all feedback to the 3-year pro timeline.
+Analyze honestly. Connect all feedback to the 3-year pro timeline.
 Be direct, warm, authoritative. Reference specific shots/moments.
 
 Return ONLY valid JSON:
@@ -564,12 +563,12 @@ async function runAnalysis() {
   const url = document.getElementById('yt-url').value.trim();
   const notes = document.getElementById('s-notes').value.trim();
   if(!url) { showErr('Please enter a YouTube URL'); return; }
-  if(!S.key) { showErr('Add your Gemini API key in settings (⚙)' return; }
+  if(!S.key) { showErr('Add your Gemini API key in settings (⚙)'); return; }
   hideErr();
   document.getElementById('results-box').style.display='none';
   document.getElementById('coach-recent').style.display='none';
   document.getElementById('load-box').classList.add('active');
-  document.getElementById('analyze-btn').disabled=true;
+  document.getElemtById('analyze-btn').disabled=true;
   startLoad();
 
   const prevGrade = S.coach[0] ? `Previous session: ${S.coach[0].grade}, Fargo ~${S.coach[0].fargo||640}` : 'First analyzed session.';
@@ -604,10 +603,11 @@ async function runAnalysis() {
     document.getElementById('analyze-btn').disabled=false;
     document.getElementById('coach-recent').style.display='block';
   } catch(e) {
-    stopLoad();    document.getElementById('load-box').classList.remove('active');
+    stopLoad();
+    document.getElementById('load-box').classList.remove('active');
     document.getElementById('analyze-btn').disabled=false;
     document.getElementById('coach-recent').style.display='block';
-    showErr(e.message||'Analysis failed. Check your API key.');
+    showErr(e.message||'Analysis failed Check your API key.');
   }
 }
 
@@ -624,16 +624,16 @@ function renderResults(a) {
       <div style="font-family:'JetBrains Mono',monospace;font-size:64px;font-weight:700;color:${gc(a.overallGrade)};line-height:1">${a.overallGrade||'—'}</div>
       <div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700">${a.overallScore||0}<span style="font-size:13px;color:var(--muted)">/100</span></div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">FARGO ~${f.rating||'—'}</div>
+        <div sle="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">FARGO ~${f.rating||'—'}</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)">${f.trend||''} · ${f.confidence||''}</div>
       </div>
     </div>
-    <dyle="font-size:13px;line-height:1.6;color:var(--text)">${a.sessionSummary||''}</div>
+    <div style="font-size:13px;line-height:1.6;color:var(--text)">${a.sessionSummary||''}</div>
   </div>`;
   // Scorecard
   if(Object.keys(sc_).length) {
     h+=`<div class="card"><div class="card-title">Scorecard</div>`;
-    Object.entries(sc_).forEach(([k,v])=>{
+    Object.entries(s.forEach(([k,v])=>{
       const score=typeof v==='object'?(v.score||0):(v||0);
       const label=typeof v==='object'&&v.label?v.label:(SC_LABELS[k]||k);
       h+=`<div class="score-row"><div class="score-label">${label}</div><div class="score-track"><div class="score-fill" style="width:${score*10}%;background:${sc(score)}"></div></div><div class="score-num" style="color:${sc(score)}">${score}</div></div>`;
@@ -681,19 +681,20 @@ function renderCoachRecent() {
       <div class="session-date">${fmtDate(s.date)}</div>
       <div class="session-title">${s.summary||'Session'}</div>
       <div class="session-meta">Fargo ~${s.fargo||'—'} · ${s.score||0}/100</div>
-    </div></di).join('');
+    </div></div>`).join('');
 }
 
 function showErr(m){const e=document.getElementById('err-box');e.textContent=m;e.classList.add('active');}
 function hideErr(){document.getElementById('err-box').classList.remove('active');}
 
 // ── CADENCE ──
-const BEATS=[
+=[
   {m:1,b:1,l:'STEP',v:'Step',c:'var(--blue)',s:true},
   {m:1,b:2,l:'SET',v:'Set',c:'var(--blue)',s:true},
   {m:1,b:3,l:'DOWN',v:'Down',c:'var(--blue)',s:true},
   {m:1,b:4,l:'SETTLE',v:null,c:'var(--muted)',s:false},
-  {m:2,b:1,l:'HOLD',v:null,c:'var(--muted)',s:false2,b:2,l:'HOLD',v:null,c:'var(--muted)',s:false},
+  {m:2,b:1,l:'HOLD',v:null,c:'var(--muted)',s:false},
+  {m:2,b:2,l:'HOLD',v:null,c:'var(--muted)',s:false},
   {m:2,b:3,l:'BACK',v:'Back',c:'var(--gold)',s:true},
   {m:2,b:4,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
   {m:3,b:1,l:'BACK',v:'Back',c:'var(--gold)',s:true},
@@ -736,9 +737,9 @@ function updateGrid(idx) {
   BEATS.forEach((_,i)=>{
     const cell=document.getElementById('bc'+i);
     if(!cell)return;
-    if(i===idx){cell.style.background=b.c;cell.style.height='16px';cell.style.boxadow=`0 0 8px ${b.c}`;}
+    if(i===idx){cell.style.background=b.c;cell.style.height='16px';cell.style.boxShadow=`0 0 8px ${b.c}`;}
     else if(cadOn&&i<idx){cell.style.background=BEATS[i].c;cell.style.opacity='0.2';cell.style.height='10px';cell.style.boxShadow='none';}
-    else{cell.style.background='var(--border)';cell.style.opacity='1';cell.style.height='10px';cell.style.boxShadow='none';}
+    else{cell.style.background='var(--border)';cell.style.opacity='1'ell.style.height='10px';cell.style.boxShadow='none';}
   });
 }
 
@@ -766,7 +767,7 @@ function startCadence() {
   const btn=document.getElementById('cad-btn');
   btn.textContent='⏹ STOP'; btn.className='btn btn-red';
   document.getElementById('cad-reset').style.display='none';
-  feBeat(0);
+  fireBeat(0);
   cadTimer=setInterval(()=>{
     cadBeat=(cadBeat+1)%16;
     if(cadBeat===0){cadShots++;document.getElementById('shot-ct').textContent=cadShots;nextWisdom();}
@@ -774,16 +775,16 @@ function startCadence() {
   },1000);
 }
 function stopCadence() {
-  cadOn=false; clearInterval(cadTimer);
+  dOn=false; clearInterval(cadTimer);
   if(window.speechSynthesis)window.speechSynthesis.cancel();
   const btn=document.getElementById('cad-btn');
   btn.textContent='▶ START'; btn.className='btn btn-blue';
-  document.getElementById('cad-reset').style.display=cadShots>0?'block':one';
+  document.getElementById('cad-reset').style.display=cadShots>0?'block':'none';
   const cue=document.getElementById('cue-word');
   cue.textContent='READY'; cue.style.color='var(--muted)'; cue.classList.remove('on');
   document.getElementById('beat-ctr').textContent='60 BPM · TAP START';
-  BEATS.forEach((_,i)=>{const c=document.getElementById('bc'+i);if(c){c.style.background='var(--border)';c.style.height='10px';c.style.boxShadow='none';c.style.opacity='1';}});
-  [1,2,3,4].forEach(m=>{const el=document.getElementById('ml'+m);el.classList.remove('active');el.style.color='var(--mutd)';});
+  BEATS.forEach(()=>{const c=document.getElementById('bc'+i);if(c){c.style.background='var(--border)';c.style.height='10px';c.style.boxShadow='none';c.style.opacity='1';}});
+  [1,2,3,4].forEach(m=>{const el=document.getElementById('ml'+m);el.classList.remove('active');el.style.color='var(--muted)';});
 }
 function resetShots() { cadShots=0; document.getElementById('shot-ct').textContent='0'; document.getElementById('cad-reset').style.display='none'; }
 function nextWisdom() { wIdx=(wIdx+Math.floor(Math.random()*(WISDOM.length-1))+1)%WISDOM.length; document.getElementById('wisdom').textContent=WISDOM[wIdx]; }
@@ -794,14 +795,14 @@ function setSrc(s) {
   ['official','ai','self'].forEach(x=>{
     const btn=document.getElementById('src-'+x);
     const on=x===s;
-    const c=x==='officia--green)':x==='ai'?'var(--blue)':'var(--gold)';
+    const c=x==='official'?'var(--green)':x==='ai'?'var(--blue)':'var(--gold)';
     btn.style.background=on?`${c}20`:'var(--panel)';
     btn.style.borderColor=on?c:'var(--border)';
     btn.style.color=on?c:'var(--muted)';
   });
 }
 function saveFargo() {
-  S.fargo.unshift({id:Date.now(),date:new Date().toISOString(),rating:parseInt(document.getElementById('f-slider').value),source:S.fargoSrc,note:document.getElementById('f-note').value.trim()});
+  S.fhift({id:Date.now(),date:new Date().toISOString(),rating:parseInt(document.getElementById('f-slider').value),source:S.fargoSrc,note:document.getElementById('f-note').value.trim()});
   save('fgp_fargo',S.fargo);
   document.getElementById('f-note').value='';
   closeSheet('fargo-sheet'); renderFargo();
@@ -809,19 +810,19 @@ function saveFargo() {
 function renderFargo() {
   const entries=S.fargo, latest=entries[0], r=latest?.rating||640;
   document.getElementById('fargo-num').textContent=r;
-  document.getElementById('gap-lbl').textContent=r>=750?'🏆 PRO REACHED':`${750-r} pts to pro`;
+  document.getElementById('gap-lbl').textContent=r>=750?'🏆 P REACHED':`${750-r} pts to pro`;
   document.getElementById('pro-fill').style.width=Math.max(0,Math.min(100,((r-500)/250)*100))+'%';
   let trend='STABLE';
-  if(entries.length>=2){const d=entries[0].rating-entries[1].rating;if(d>10)trend='SURGING ⚡';else if(d>3)trend='RISING lse if(d<-3)trend='DECLINING ↓';}
+  if(entries.length>=2){const d=entries[0].rating-entries[1].rating;if(d>10)trend='SURGING ⚡';else if(d>3)trend='RISING ↑';else if(d<-3)trend='DECLINING ↓';}
   document.getElementById('fargo-trend').textContent=`WPB APP RATED · ${trend}`;
   const official=entries.find(e=>e.source==='official'), ai=entries.find(e=>e.source==='ai');
-  document.getElementById('f-official').textContent=official?.rating||'—';
+  document.getElem('f-official').textContent=official?.rating||'—';
   document.getElementById('f-ai').textContent=ai?.rating||'—';
   const chart=document.getElementById('f-chart'), empty=document.getElementById('f-empty'), list=document.getElementById('f-list');
-  if(!entries.length){charHTML='';empty.style.display='block';list.innerHTML='';return;}
+  if(!entries.length){chart.innerHTML='';empty.style.display='block';list.innerHTML='';return;}
   empty.style.display='none';
   const cEntries=entries.slice(0,12).reverse();
-  const ratings=cEntries.map(e=>e.rating), minR=Math.min(...ratings)-15, maxR=Math.max(...ratings)+15;
+  const ratings=cEntries.map(e=>e.rating), minR=Math.min(...ratings)-15, maxR=Math.max(..ings)+15;
   const srcC={official:'var(--green)',ai:'var(--blue)',self:'var(--gold)'};
   chart.innerHTML=cEntries.map(e=>{
     const h=((e.rating-minR)/(maxR-minR))*62, c=srcC[e.source]||'var(--blue)';
@@ -829,16 +830,16 @@ function renderFargo() {
   }).join('');
   list.innerHTML=entries.slice(0,8).map(e=>{
     const c=srcC[e.source]||'var(--blue)', sl={official:'OFFICIAL',ai:'AI EST.',self:'SELF'};
-    return `<div class="fargo-row"><div class="fargo-row-date">${fmtDate(e.date)}${e.note?` · ${e.note}`:''}</div><span class="src-tag" style="color:${c};border:1px solid ${c}">${sl[e.source]||'?'}</span><div class="fargo-row-rating" style="color:${c}"${e.rating}</div></div>`;
+    return `<div class="fargo-row"><div class="fargo-row-date">${fmtDate(e.date)}${e.note?` · ${e.note}`:''}</div><span class="src-tag" style="color:${c};border:1px solid ${c}">${sl[e.source]||'?'}</span><div class="fargo-row-rating" style="color:${c}">${e.rating}</div></div>`;
   }).join('');
 }
 
 // ── LOG ──
 function adjDur(d){S.dur=Math.max(10,Math.min(360,S.dur+d));document.getElementById('dur-val').textContent=S.dur;}
 function setRating(n){S.rating=n;renderStars(n);}
-function renderStars(n){document.querySelectorAll('#star-row span').forEach((s,i)=>{s.style.color=i<n?'var(--gold)':'var(--muted)';});}
+funderStars(n){document.querySelectorAll('#star-row span').forEach((s,i)=>{s.style.color=i<n?'var(--gold)':'var(--muted)';});}
 function saveLog() {
-  S.sessions.unshift({id:Date.now(),date:new Date().toISOString(),title:document.getElementById('log-title').value.trim()||`S{fmtDate(new Date().toISOString())}`,duration:S.dur,rating:S.rating,notes:document.getElementById('log-notes').value.trim()});
+  S.sessions.unshift({id:Date.now(),date:new Date().toISOString(),title:document.getElementById('log-title').value.trim()||`Session ${fmtDate(new Date().toISOString())}`,duration:S.dur,rating:S.rating,notes:document.getElementById('log-notes').value.trim()});
   save('fgp_sessions',S.sessions);
   document.getElementById('log-title').value=''; document.getElementById('log-notes').value='';
   closeSheet('log-sheet'); renderLog();
@@ -861,32 +862,32 @@ function renderLog() {
 
 // ── FIT ──
 const PHASES=[
-  {name:'FOUNDATION',weeks:[1,2,3,4],c:'var(--blue)',desc:'Rebuild base fitness. Low inm focus. Pool body mechanics.'},
+  {name:'FOUNDATION',weeks:[1,2,3,4],c:'var(--blue)',desc:'Rebuild base fitness. Low intensity, form focus. Pool body mechanics.'},
   {name:'BUILD',weeks:[5,6,7,8],c:'var(--gold)',desc:'Progressive overload. Core stability and stance endurance.'},
-  {name:'PEAK',weeks:[9,10,11,12],c:'var(--green)',desc:'Peak conditioning. Match simulation. Full pool-athlete mode.'},
+  {name:'PEAK',weeks:[9,10,11,12],c:'var(--green)',desc:'Peak conditioninulation. Full pool-athlete mode.'},
 ];
 const DAYS=[
   {day:'MON',focus:'Upper Body + Core',exercises:[
     {n:'Push-ups',s:'3×10',note:'Bridge stability'},{n:'Dumbbell rows',s:'3×10',note:'Stroke pull muscles'},
-    {n:'Plank',s:'3×30s',note:'Core for stance'},{n:'Dead bug',3×8',note:'Anti-rotation'},
+    {n:'Plank',s:'3×30s',note:'Core for stance'},{n:'Dead bug',s:'3×8',note:'Anti-rotation'},
     {n:'Band pull-aparts',s:'3×15',note:'Shoulder health'},
   ]},
   {day:'TUE',focus:'Cardio + Flexibility',exercises:[
-    {n:'20min walk/jog',s:'1×20min',note:'Zone 2 cardio'},{n:'Hip flexor stretch',s:'2×30s',note:'Stance freedom'},
+    {n:'20min walk/jog',s:'1×20min',note:'Zone 2 cardio'},{n:'Hip flexor stretch×30s',note:'Stance freedom'},
     {n:'Thoracic rotation',s:'2×10',note:'Bridge reach'},{n:'Hamstring stretch',s:'2×30s',note:'Bent-over reach'},
   ]},
   {day:'WED',focus:'REST / Pool Practice',exercises:[{n:'Pool session',s:'60-90min',note:'Apply the routine'}]},
-  {day:'ocus:'Lower Body + Balance',exercises:[
+  {day:'THU',focus:'Lower Body + Balance',exercises:[
     {n:'Bodyweight squats',s:'3×12',note:'Stance strength'},{n:'Lunges',s:'3×8 each',note:'Step-in strength'},
-    {n:'Single-leg balance',s:'3×20s',note:'Address stability'},{n:'Calf raises',s:'3×15',note:'Long session standing'},
+    {n:'Single-leg balance',s:'3×20s',note:'Address stability'},{n:'Calf rais'3×15',note:'Long session standing'},
   ]},
   {day:'FRI',focus:'Core + Grip',exercises:[
     {n:'Farmer carries',s:'3×30m',note:'Grip endurance'},{n:'Side plank',s:'3×20s each',note:'Lateral stability'},
-    {n:'Wrist curls',s:'3×12',note:'Cue control'},{n:'Reverse wrist,s:'3×12',note:'Balance forearm'},
+    {n:'Wrist curls',s:'3×12',note:'Cue control'},{n:'Reverse wrist curls',s:'3×12',note:'Balance forearm'},
     {n:'Pallof press',s:'3×10',note:'Anti-rotation core'},
   ]},
   {day:'SAT',focus:'Pool + Stretching',exercises:[
-    {n:'Pool session',s:'90-120min',note:'Long session endurance'},{n:'Full body stretch',s:'15min',note:'Post-session recovery'},
+    {n:'Pool session',s:'90-120min',note:'Long session endurance'},{n:'Full bretch',s:'15min',note:'Post-session recovery'},
   ]},
   {day:'SUN',focus:'FULL REST',exercises:[{n:'Recovery walk',s:'Optional 20min',note:'Active recovery'}]},
 ];
@@ -895,7 +896,7 @@ let fitActiveTab='today';
 function fitTab(t) {
   fitActiveTab=t;
   ['today','week','program'].forEach(x=>{
-    cument.getElementById('ft-'+x).classList.toggle('active',x===t);
+    document.getElementById('ft-'+x).classList.toggle('active',x===t);
     document.getElementById('fit-'+x).style.display=x===t?'block':'none';
   });
 }
@@ -904,11 +905,11 @@ function renderFit() {
   const phase=w<=4?PHASES[0]:w<=8?PHASES[1]:PHASES[2];
   const pill=document.getElementById('fit-phase-pill');
   pill.innerHTML=`<span style="color:${phase.c}">⚡</span> <span style="color:${phase.c}">PHASE: ${phase.name}</span> <span style="color:var(--muted)">· WEEK ${w}</span>`;
-  pill.style.background=`${phase15`; pill.style.border=`1px solid ${phase.c}30`;
+  pill.style.background=`${phase.c}15`; pill.style.border=`1px solid ${phase.c}30`;
   // Week dots
   document.getElementById('week-dots').innerHTML=Array.from({length:12},(_,i)=>{
     const wn=i+1, pc=wn<=4?'var(--blue)':wn<=8?'var(--gold)':'var(--green)';
-    const cls=wn<w?'done':wn===w?'cur':'';
+    consts=wn<w?'done':wn===w?'cur':'';
     return `<div class="w-dot ${cls}" style="${cls==='cur'?`background:${pc};border-color:${pc};box-shadow:0 0 8px ${pc};color:var(--black)`:cls==='done'?`background:${pc}20;color:${pc}`:''}">${wn}</div>`;
   }).join('');
   // Today
@@ -918,17 +919,17 @@ function renderFit() {
   document.getElementById('fit-week').innerHTML=DAYS.map((d,i)=>renderDay(d,`w${w}_d${i}`)).join('');
   // Program
   document.getElementById('fit-program').innerHTML=`
-    ${PHASES.map(p=>`<div class="card" style="border-color:${p.c}30"><div style="color:${p.c};font-weight:700;font-size:15px;margin-bottom:6px">PHASE: ${p.name} · Weeks ${p.weeks[0]}-${.weeks[p.weeks.length-1]}</div><div style="font-size:13px;color:var(--muted)">${p.desc}</div></div>`).join('')}
+    ${PHASES.map(p=>`<div class="card" style="border-color:${p.c}30"><div style="color:${p.c};font-weight:700;font-size:15px;margin-bottom:6px">PHASE: ${p.name} · Weeks ${p.weeks[0]}-${p.weeks[p.weeks.length-1]}</div><div style="font-size:13px;color:var(--muted)">${p.desc}</div></div>`).join('')}
     <div class="card"><div class="card-title">Current Week</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:16px">
+    <div style="display:flex;align-items:center;justify-ontent:center;gap:16px">
       <button onclick="adjWeek(-1)" style="font-size:24px;color:var(--blue);width:40px;height:40px">−</button>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--text);width:80px;text-align:center">Week{w}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--text);width:80px;text-align:center">Week ${w}</div>
       <button onclick="adjWeek(1)" style="font-size:24px;color:var(--blue);width:40px;height:40px">+</button>
     </div></div>`;
 }
 function renderDay(d, key) {
   const done=S.fit.done[key]||{};
-  return `<div class="workout-card">
+  return `<div class="workoucard">
     <div class="workout-hdr"><div class="workout-day-name">${d.day}</div><div class="workout-focus">${d.focus}</div></div>
     ${d.exercises.map((ex,i)=>`<div class="ex-row">
       <div class="ex-check ${done[i]?'done':''}" onclick="toggleEx('${key}',${i})"></div>
@@ -944,7 +945,8 @@ function toggleEx(key,i) {
 }
 function adjWeek(d) { S.fit.week=Math.max(1,Math.min(12,(S.fit.week||1)+d)); save('fgp_fit',S.fit); renderFit(); fitTab('program'); }
 
-// ── UTILS ─ân fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+// ── UTILS ──
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 
 // ── INIT ──
 function init() {
@@ -954,7 +956,7 @@ function init() {
   document.getElementById('wisdom').textContent=WISDOM[wIdx];
   document.getElementById('f-slider').value=S.fargo[0]?.rating||640;
   document.getElementById('f-slider-val').textContent=S.fargo[0]?.rating||640;
-  renderCnt(); renderLog();
+  renderCoachRecent(); renderLog();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   initInstall();
   initOffline();
@@ -968,27 +970,28 @@ function logShot(made) {
   if(made){scMade++;scRun++;}else{scRun=0;}
   if(scRun>scBest)scBest=scRun;
   updateShotUI();
-  // Milestone on (scRun===5)showMilestone('🎯','5-ball run!','Keep the routine tight');
+  // Milestone on run
+  if(scRun===5)showMilestone('🎯','5-ball run!','Keep the routine tight');
   if(scRun===10)showMilestone('⚡','10-ball run!','That's pro-level focus');
-  if(scRun===20)showMilestone('🏆','20-ball run!','Flash Gordon Pool');
+  if(scRun===20)showMilestone('🏆','20-ball run!','Flash 
 }
 function updateShotUI() {
   document.getElementById('sc-made').textContent=scMade;
   document.getElementById('sc-att').textContent=scAtt;
   const pct=scAtt>0?Math.round((scMade/scAtt)*100):0;
   document.getElementById('sc-pct').textContent=scAtt>0?pct+'%':'—';
-  document.getElementB-fill').style.width=pct+'%';
+  document.getElementById('pct-fill').style.width=pct+'%';
   document.getElementById('sc-run').textContent=scRun;
   document.getElementById('sc-best').textContent=scBest;
 }
-function resetShotCounter(){scMade=0;scAtt=0;scRun=0;scBest=0;updateShotUI();}
+function resetShotCounter(){scMade=0;scAtt=0;scRun=0;scBest=0;updateShotU);}
 
 // ── INSTALL BANNER ──
 function initInstall() {
   const dismissed=localStorage.getItem('fgp_install_dismissed');
   const isStandalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
   if(!dismissed&&!isStandalone) {
-    document.getElementByIdl-banner').classList.add('show');
+    document.getElementById('install-banner').classList.add('show');
   }
 }
 function dismissInstall(){
@@ -996,7 +999,7 @@ function dismissInstall(){
   localStorage.setItem('fgp_install_dismissed','1');
 }
 
-// ── OFFLINE INDICATOR ──
+// ── OFFLINE─
 function initOffline() {
   const pill=document.getElementById('offline-pill');
   function check(){pill.classList.toggle('show',!navigator.onLine);}
@@ -1010,8 +1013,7 @@ let toastTimer=null;
 function showMilestone(icon,msg,sub) {
   document.getElementById('toast-icon').textContent=icon;
   document.getElementById('toast-msg').textContent=msg;
-  document.getElementById('toast-sub').textContent=sub;
-  document.getElementById('milestone-toast').classList.add('show');
+  document.getElementById('toast-sub').textContent=sment.getElementById('milestone-toast').classList.add('show');
   clearTimeout(toastTimer);
   toastTimer=setTimeout(closeToast,4000);
 }
@@ -1024,7 +1026,7 @@ function checkStreakMilestone(streak) {
   for(const [days,msg] of Object.entries(milestones).reverse()) {
     if(streak>=parseInt(days)&&last<parseInt(days)){
       localStorage.setItem('fgp_last_streak_milestone',days);
-      showMilestone('🔥',msg,'Keep the routine ing');
+      showMilestone('🔥',msg,'Keep the routine going');
       break;
     }
   }
@@ -1033,12 +1035,12 @@ function checkStreakMilestone(streak) {
 // ── DATA EXPORT ──
 function exportJSON() {
   const data={sessions:S.sessions,fargo:S.fargo,coachHistory:S.coach,fit:S.fit,exportDate:new Date().toISOString()};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.sata,null,2)],{type:'application/json'});
   dlBlob(blob,`fgp-export-${new Date().toISOString().slice(0,10)}.json`);
 }
 function exportCSV() {
   const rows=[['Date','Title','Duration(min)','Rating','Notes']];
-  S.sessions.forEach(s=>rows.push([fmtDate(s.date),s.title||'',sn||60,s.rating||0,(s.notes||'').replace(/,/g,';')]));
+  S.sessions.forEach(s=>rows.push([fmtDate(s.date),s.title||'',s.duration||60,s.rating||0,(s.notes||'').replace(/,/g,';')]));
   const fargoRows=[['','FARGO ENTRIES','','',''],['Date','Rating','Source','Note','']];
   S.fargo.forEach(f=>fargoRows.push([fmtDate(f.date),f.rating,f.source,f.note||'','']));
   const csv=[...rows,...fargoRows].map(r=>r.join(',')).join('\n');
@@ -1055,3 +1057,4 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
+
