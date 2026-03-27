@@ -77,8 +77,8 @@ input,textarea{font-family:'JetBrains Mono',monospace}
 .run-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;margin-top:4px}
 
 /* INSTALL BANNER */
-#install-banner{background:linear-gradient(135deg,rgba(0,191,255,.1),rgba(245,196,0,.06));border:1px solid rgba(0,191,255,.2);border-radius:12px;padding:14px;margin-bottom:14px;display:none;align-items:center;gap:12px;pointer-events:none}
-#install-banner.show{display:flex;pointer-events:auto}
+#install-banner{background:linear-gradient(135deg,rgba(0,191,255,.1),rgba(245,196,0,.06));border:1px solid rgba(0,191,255,.2);border-radius:12px;padding:14px;margin-bottom:14px;display:none;align-items:center;gap:12px}
+#install-banner.show{display:flex}
 #install-banner-text{flex:1;font-size:13px;color:var(--text);line-height:1.4}
 #install-banner-text span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);display:block;margin-top:2px}
 
@@ -182,12 +182,6 @@ input,textarea{font-family:'JetBrains Mono',monospace}
 </style>
 </head>
 <body>
-<div id="offline-pill">⚡ OFFLINE · Coach unavailable</div>
-<div id="milestone-toast">
-  <div class="toast-icon" id="toast-icon">🏆</div>
-  <div><div class="toast-msg" id="toast-msg">Milestone!</div><span class="toast-sub" id="toast-sub"></span></div>
-  <button onclick="closeToast()" style="color:var(--muted);font-size:18px;padding:4px">×</button>
-</div>
 <div id="app">
 <div id="views">
 
@@ -450,19 +444,19 @@ input,textarea{font-family:'JetBrains Mono',monospace}
     <div class="card-title">Duration</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px">
       <button onclick="adjDur(-15)" style="font-size:28px;color:var(--blue);width:40px;height:40px">−</button>
-      <div id="dur-val" style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weit:700;color:var(--text);width:80px;text-align:center">60</div>
+      <div id="dur-val" style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:var(--text);width:80px;text-align:center">60</div>
       <button onclick="adjDur(15)" style="font-size:28px;color:var(--blue);width:40px;height:40px">+</button>
     </div>
     <div class="card-title">Rating</div>
     <div id="star-row" style="display:flex;gap:10px;justify-content:center;font-size:28px;margin-bottom:14px">
       <span onclick="setRating(1)" style="cursor:pointer">★</span><span onclick="setRating(2)" style="cursor:pointer">★</span>
-      <span onclick="setRating(3)" style="curpointer">★</span><span onclick="setRating(4)" style="cursor:pointer">★</span>
+      <span onclick="setRating(3)" style="cursor:pointer">★</span><span onclick="setRating(4)" style="cursor:pointer">★</span>
       <span onclick="setRating(5)" style="cursor:pointer">★</span>
     </div>
     <input type="text" id="log-title" class="input" placeholder="Session title..." style="margin-bottom:8px">
     <textarea id="log-notes" class="input" rows="2" placeholder="Notes..." style="margin-bottom:14px"></textarea>
     <button class="btn btn-blue" onclick="saveLog()" style="margin-bottom:8px">SAVE SESSION</button>
-    <button class="btn btt" onclick="closeSheet('log-sheet')">CANCEL</button>
+    <button class="btn btn-ghost" onclick="closeSheet('log-sheet')">CANCEL</button>
   </div>
 </div>
 
@@ -478,7 +472,7 @@ const S = {
   dur: 60,
   rating: 3,
 };
-const save = (k,v)=>localStorage.k,JSON.stringify(v));
+const save = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
 // ── NAV ──
 function showView(n) {
@@ -516,7 +510,7 @@ const MODEL = 'gemini-2.5-flash';
 const PROMPT = `You are Flash Coach — an elite AI billiards coach for Flash Gordon Pool.
 
 PLAYER: Scott "Flash Gordon" Gordon, Fargo ~640 rising, goal 750+ pro.
-Orthodox stroke rebuild (from forward slip stroke). Briem routine, 60 BPM.
+Orthodox stroke rebuild (from forward slip stroke). Briesath rhythm routine, 60 BPM.
 Equipment: McDermott H1752, Defy carbon shaft, Brunswick Gold Crown IV 9ft, Simonis 870.
 
 Analyze the video honestly. Connect all feedback to the 3-year pro timeline.
@@ -568,7 +562,7 @@ async function runAnalysis() {
   if(!S.key) { showErr('Add your Gemini API key in settings (⚙)'); return; }
   hideErr();
   document.getElementById('results-box').style.display='none';
-  document.getElemeById('coach-recent').style.display='none';
+  document.getElementById('coach-recent').style.display='none';
   document.getElementById('load-box').classList.add('active');
   document.getElementById('analyze-btn').disabled=true;
   startLoad();
@@ -607,7 +601,7 @@ async function runAnalysis() {
   } catch(e) {
     stopLoad();
     document.getElementById('load-box').classList.remove('active');
-    document.getElementById('analyze-bt').disabled=false;
+    document.getElementById('analyze-btn').disabled=false;
     document.getElementById('coach-recent').style.display='block';
     showErr(e.message||'Analysis failed. Check your API key.');
   }
@@ -625,14 +619,14 @@ function renderResults(a) {
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
       <div style="font-family:'JetBrains Mono',monospace;font-size:64px;font-weight:700;color:${gc(a.overallGrade)};line-height:1">${a.overallGrade||'—'}</div>
       <div>
-        <div style="font-family:'JetBrains Mono',monospace;font-se:28px;font-weight:700">${a.overallScore||0}<span style="font-size:13px;color:var(--muted)">/100</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700">${a.overallScore||0}<span style="font-size:13px;color:var(--muted)">/100</span></div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">FARGO ~${f.rating||'—'}</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)">${f.trend||''} · ${f.confidence||''}</div>
       </div>
     </div>
     <div style="font-size:13px;line-height:1.6;color:var(--text)">${a.sessionSummary||''}</div>
   </div>`;
-  // Scorrd
+  // Scorecard
   if(Object.keys(sc_).length) {
     h+=`<div class="card"><div class="card-title">Scorecard</div>`;
     Object.entries(sc_).forEach(([k,v])=>{
@@ -686,7 +680,7 @@ function renderCoachRecent() {
     </div></div>`).join('');
 }
 
-function showErr(m){const e=document.getElementById('err-box');e.textContent=m;e.classListd('active');}
+function showErr(m){const e=document.getElementById('err-box');e.textContent=m;e.classList.add('active');}
 function hideErr(){document.getElementById('err-box').classList.remove('active');}
 
 // ── CADENCE ──
@@ -697,7 +691,8 @@ const BEATS=[
   {m:1,b:4,l:'SETTLE',v:null,c:'var(--muted)',s:false},
   {m:2,b:1,l:'HOLD',v:null,c:'var(--muted)',s:false},
   {m:2,b:2,l:'HOLD',v:null,c:'var(--muted)',s:false},
-  {m:2,b:3,l:'BACK',v:'Back',c:'var(--gold)',s:true2,b:4,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
+  {m:2,b:3,l:'BACK',v:'Back',c:'var(--gold)',s:true},
+  {m:2,b:4,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
   {m:3,b:1,l:'BACK',v:'Back',c:'var(--gold)',s:true},
   {m:3,b:2,l:'FORWARD',v:'Forward',c:'var(--gold)',s:true},
   {m:3,b:3,l:'BACK',v:'Back',c:'var(--gold)',s:true},
@@ -739,7 +734,7 @@ function updateGrid(idx) {
     const cell=document.getElementById('bc'+i);
     if(!cell)return;
     if(i===idx){cell.style.background=b.c;cell.style.height='16px';cell.style.boxShadow=`0 0 8px ${b.c}`;}
-    else if(cadOn&&i<idx){cell.style.background=BEATS[i].c;cell.style.opacity='0.2cell.style.height='10px';cell.style.boxShadow='none';}
+    else if(cadOn&&i<idx){cell.style.background=BEATS[i].c;cell.style.opacity='0.2';cell.style.height='10px';cell.style.boxShadow='none';}
     else{cell.style.background='var(--border)';cell.style.opacity='1';cell.style.height='10px';cell.style.boxShadow='none';}
   });
 }
@@ -771,7 +766,7 @@ function startCadence() {
   fireBeat(0);
   cadTimer=setInterval(()=>{
     cadBeat=(cadBeat+1)%16;
-    if(cadBeat===0){cadShots++;documentetElementById('shot-ct').textContent=cadShots;nextWisdom();}
+    if(cadBeat===0){cadShots++;document.getElementById('shot-ct').textContent=cadShots;nextWisdom();}
     fireBeat(cadBeat);
   },1000);
 }
@@ -782,12 +777,12 @@ function stopCadence() {
   btn.textContent='▶ START'; btn.className='btn btn-blue';
   document.getElementById('cad-reset').style.display=cadShots>0?'block':'none';
   const cue=document.getElementById('cue-word');
-  cue.textContent='READY'; cue.style.color='var(--med)'; cue.classList.remove('on');
+  cue.textContent='READY'; cue.style.color='var(--muted)'; cue.classList.remove('on');
   document.getElementById('beat-ctr').textContent='60 BPM · TAP START';
   BEATS.forEach((_,i)=>{const c=document.getElementById('bc'+i);if(c){c.style.background='var(--border)';c.style.height='10px';c.style.boxShadow='none';c.style.opacity='1';}});
   [1,2,3,4].forEach(m=>{const el=document.getElementById('ml'+m);el.classList.remove('active');el.style.color='var(--muted)';});
 }
-function resetShots() { cadShots=0; document.getElementById('shot-ct').textContent='0'; document.etElementById('cad-reset').style.display='none'; }
+function resetShots() { cadShots=0; document.getElementById('shot-ct').textContent='0'; document.getElementById('cad-reset').style.display='none'; }
 function nextWisdom() { wIdx=(wIdx+Math.floor(Math.random()*(WISDOM.length-1))+1)%WISDOM.length; document.getElementById('wisdom').textContent=WISDOM[wIdx]; }
 
 // ── FARGO ──
@@ -797,7 +792,8 @@ function setSrc(s) {
     const btn=document.getElementById('src-'+x);
     const on=x===s;
     const c=x==='official'?'var(--green)':x==='ai'?'var(--blue)':'var(--gold)';
-    btn.style.background=on?`${c}20`:'var(--panel)';.style.borderColor=on?c:'var(--border)';
+    btn.style.background=on?`${c}20`:'var(--panel)';
+    btn.style.borderColor=on?c:'var(--border)';
     btn.style.color=on?c:'var(--muted)';
   });
 }
@@ -814,14 +810,14 @@ function renderFargo() {
   document.getElementById('pro-fill').style.width=Math.max(0,Math.min(100,((r-500)/250)*100))+'%';
   let trend='STABLE';
   if(entries.length>=2){const d=entries[0].rating-entries[1].rating;if(d>10)trend='SURGING ⚡';else if(d>3)trend='RISING ↑';else if(d<-3)trend='DECLINING ↓';}
-  document.getElementById('fargo-trend').textContent=`WPB APP RATEend}`;
+  document.getElementById('fargo-trend').textContent=`WPB APP RATED · ${trend}`;
   const official=entries.find(e=>e.source==='official'), ai=entries.find(e=>e.source==='ai');
   document.getElementById('f-official').textContent=official?.rating||'—';
   document.getElementById('f-ai').textContent=ai?.rating||'—';
   const chart=document.getElementById('f-chart'), empty=document.getElementById('f-empty'), list=document.getElementById('f-list');
   if(!entries.length){chart.innerHTML='';empty.style.display='block';list.innerHTML='';return;}
   empty.style.display='none';
-  const cEns=entries.slice(0,12).reverse();
+  const cEntries=entries.slice(0,12).reverse();
   const ratings=cEntries.map(e=>e.rating), minR=Math.min(...ratings)-15, maxR=Math.max(...ratings)+15;
   const srcC={official:'var(--green)',ai:'var(--blue)',self:'var(--gold)'};
   chart.innerHTML=cEntries.map(e=>{
@@ -835,7 +831,7 @@ function renderFargo() {
 }
 
 // ── LOG ──
-function adjDur(d){S.dur=Math.max(10,Math..dur+d));document.getElementById('dur-val').textContent=S.dur;}
+function adjDur(d){S.dur=Math.max(10,Math.min(360,S.dur+d));document.getElementById('dur-val').textContent=S.dur;}
 function setRating(n){S.rating=n;renderStars(n);}
 function renderStars(n){document.querySelectorAll('#star-row span').forEach((s,i)=>{s.style.color=i<n?'var(--gold)':'var(--muted)';});}
 function saveLog() {
@@ -863,7 +859,7 @@ function renderLog() {
 // ── FIT ──
 const PHASES=[
   {name:'FOUNDATION',weeks:[1,2,3,4],c:'var(--blue)',desc:'Rebuild base fitness. Low intensity, form focus. Pool body mechanics.'},
-  {name:'BUILD',weeks:[5,6,7,8],c:'var(--gold)',desc:'Progressi Core stability and stance endurance.'},
+  {name:'BUILD',weeks:[5,6,7,8],c:'var(--gold)',desc:'Progressive overload. Core stability and stance endurance.'},
   {name:'PEAK',weeks:[9,10,11,12],c:'var(--green)',desc:'Peak conditioning. Match simulation. Full pool-athlete mode.'},
 ];
 const DAYS=[
@@ -872,13 +868,13 @@ const DAYS=[
     {n:'Plank',s:'3×30s',note:'Core for stance'},{n:'Dead bug',s:'3×8',note:'Anti-rotation'},
     {n:'Band pull-aparts',s:'3×15',note:'Shoulder health'},
   ]},
-  {day:'Tocus:'Cardio + Flexibility',exercises:[
+  {day:'TUE',focus:'Cardio + Flexibility',exercises:[
     {n:'20min walk/jog',s:'1×20min',note:'Zone 2 cardio'},{n:'Hip flexor stretch',s:'2×30s',note:'Stance freedom'},
     {n:'Thoracic rotation',s:'2×10',note:'Bridge reach'},{n:'Hamstring stretch',s:'2×30s',note:'Bent-over reach'},
   ]},
   {day:'WED',focus:'REST / Pool Practice',exercises:[{n:'Pool session',s:'60-90min',note:'Apply the routine'}]},
   {day:'THU',focus:'Lower Body + Balance',exercises:[
-    {n:'Bodyweight squats',s:'3×12',note:'Stance strength'},{n:es',s:'3×8 each',note:'Step-in strength'},
+    {n:'Bodyweight squats',s:'3×12',note:'Stance strength'},{n:'Lunges',s:'3×8 each',note:'Step-in strength'},
     {n:'Single-leg balance',s:'3×20s',note:'Address stability'},{n:'Calf raises',s:'3×15',note:'Long session standing'},
   ]},
   {day:'FRI',focus:'Core + Grip',exercises:[
@@ -886,7 +882,7 @@ const DAYS=[
     {n:'Wrist curls',s:'3×12',note:'Cue control'},{n:'Reverse wrist curls',s:'3×12',note:'Balance forearm'},
     {n:'Pallof press',s:'3×10',note:'Anti-rotation core'},
   ]},
-SAT',focus:'Pool + Stretching',exercises:[
+  {day:'SAT',focus:'Pool + Stretching',exercises:[
     {n:'Pool session',s:'90-120min',note:'Long session endurance'},{n:'Full body stretch',s:'15min',note:'Post-session recovery'},
   ]},
   {day:'SUN',focus:'FULL REST',exercises:[{n:'Recovery walk',s:'Optional 20min',note:'Active recovery'}]},
@@ -907,7 +903,7 @@ function renderFit() {
   pill.innerHTML=`<span style="color:${phase.c}">⚡</span> <span style="color:${phase.c}">PHASE: ${phase.name}</span> <span style="color:var(--muted)">· WEEK ${w}</span>`;
   pill.style.background=`${phase.c}15`; pill.style.border=`1px solid ${phase.c}30`;
   // Week dots
-  document.getElementById('week-dots').inHTML=Array.from({length:12},(_,i)=>{
+  document.getElementById('week-dots').innerHTML=Array.from({length:12},(_,i)=>{
     const wn=i+1, pc=wn<=4?'var(--blue)':wn<=8?'var(--gold)':'var(--green)';
     const cls=wn<w?'done':wn===w?'cur':'';
     return `<div class="w-dot ${cls}" style="${cls==='cur'?`background:${pc};border-color:${pc};box-shadow:0 0 8px ${pc};color:var(--black)`:cls==='done'?`background:${pc}20;color:${pc}`:''}">${wn}</div>`;
@@ -919,12 +915,12 @@ function renderFit() {
   document.getElementById('fit-week').innerHTML=DAYS.map((d,i)=>renderDay(d,`w${w}_d${i}`)).join('');
   // Program
   document.getElementById('fit-program').innerHTML=`
-    ${PHASES.map(p=>`<div class="card" style="border-color:${p.c}30"><div style="color:${p.c};font-weight:700;font-size:15px;margin-bottom:6px">PHASE: ${p.name} · Weeks ${p.weeks[0]}-${p.weeks[p.weeks.length-1]}</div><div style="font-size:13px;color:var(--muted)">${p.desc}</div></div>`).join(')}
+    ${PHASES.map(p=>`<div class="card" style="border-color:${p.c}30"><div style="color:${p.c};font-weight:700;font-size:15px;margin-bottom:6px">PHASE: ${p.name} · Weeks ${p.weeks[0]}-${p.weeks[p.weeks.length-1]}</div><div style="font-size:13px;color:var(--muted)">${p.desc}</div></div>`).join('')}
     <div class="card"><div class="card-title">Current Week</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:16px">
       <button onclick="adjWeek(-1)" style="font-size:24px;color:var(--blue);width:40px;height:40px">−</button>
       <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--text);width:80px;text-align:center">Week ${w}</div>
-      <button onclick="adjWeek(1)" style="font-size:24px;color:var(--blue);width:40px;height:40p>+</button>
+      <button onclick="adjWeek(1)" style="font-size:24px;color:var(--blue);width:40px;height:40px">+</button>
     </div></div>`;
 }
 function renderDay(d, key) {
@@ -946,7 +942,7 @@ function toggleEx(key,i) {
 function adjWeek(d) { S.fit.week=Math.max(1,Math.min(12,(S.fit.week||1)+d)); save('fgp_fit',S.fit); renderFit(); fitTab('program'); }
 
 // ── UTILS ──
-function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'});}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 
 // ── INIT ──
 function init() {
@@ -957,7 +953,7 @@ function init() {
   document.getElementById('f-slider').value=S.fargo[0]?.rating||640;
   document.getElementById('f-slider-val').textContent=S.fargo[0]?.rating||640;
   renderCoachRecent(); renderLog();
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc);
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   initInstall();
   initOffline();
   if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
@@ -972,7 +968,7 @@ function logShot(made) {
   updateShotUI();
   // Milestone on run
   if(scRun===5)showMilestone('🎯','5-ball run!','Keep the routine tight');
-  if(scRun===10)showMilesto10-ball run!','That's pro-level focus');
+  if(scRun===10)showMilestone('⚡','10-ball run!','That's pro-level focus');
   if(scRun===20)showMilestone('🏆','20-ball run!','Flash Gordon Pool');
 }
 function updateShotUI() {
@@ -982,7 +978,7 @@ function updateShotUI() {
   document.getElementById('sc-pct').textContent=scAtt>0?pct+'%':'—';
   document.getElementById('pct-fill').style.width=pct+'%';
   document.getElementById('sc-run').textContent=scRun;
-  document.getElemyId('sc-best').textContent=scBest;
+  document.getElementById('sc-best').textContent=scBest;
 }
 function resetShotCounter(){scMade=0;scAtt=0;scRun=0;scBest=0;updateShotUI();}
 
@@ -995,42 +991,55 @@ function initInstall() {
   }
 }
 function dismissInstall(){
-  document.getElementById('inster').classList.remove('show');
+  document.getElementById('install-banner').classList.remove('show');
   localStorage.setItem('fgp_install_dismissed','1');
 }
 
 // ── OFFLINE INDICATOR ──
 function initOffline() {
-  const pill=document.getElementById('offline-pill');
   function check(){
-    if(!navigator.onLine){pill.classList.add('show');}
-    else{pill.classList.remove('show');}
+    let pill=document.getElementById('offline-pill');
+    if(!navigator.onLine){
+      if(!pill){
+        pill=document.createElement('div');
+        pill.id='offline-pill';
+        pill.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);background:rgba(255,61,87,.9);color:#fff;font-family:JetBrains Mono,monospace;font-size:10px;letter-spacing:1px;padding:5px 14px;border-radius:20px;z-index:9999;display:flex;align-items:center;gap:5px';
+        pill.textContent='⚡ OFFLINE · Coach unavailable';
+        document.body.appendChild(pill);
+      }
+    } else {
+      if(pill) pill.remove();
+    }
   }
   window.addEventListener('online',check);
   window.addEventListener('offline',check);
-  // Don't check immediately on load — wait for page to fully settle
-  setTimeout(check, 2000);
+  setTimeout(check, 3000);
 }
 
-// NE TOAST ──
+// ── MILESTONE TOAST ──
 let toastTimer=null;
 function showMilestone(icon,msg,sub) {
-  document.getElementById('toast-icon').textContent=icon;
-  document.getElementById('toast-msg').textContent=msg;
-  document.getElementById('toast-sub').textContent=sub;
-  document.getElementById('milestone-toast').classList.add('show');
+  let t=document.getElementById('milestone-toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='milestone-toast';
+    t.style.cssText='position:fixed;bottom:80px;left:16px;right:16px;background:rgba(20,20,32,.97);border:1px solid rgba(245,196,0,.4);border-radius:12px;padding:14px;z-index:9999;display:flex;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(0,0,0,.5)';
+    document.body.appendChild(t);
+  }
+  t.innerHTML=`<div style="font-size:24px">${icon}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--gold)">${msg}</div><div style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--muted);margin-top:2px">${sub}</div></div><button onclick="closeToast()" style="color:var(--muted);font-size:20px;padding:4px;background:none;border:none;cursor:pointer">×</button>`;
   clearTimeout(toastTimer);
   toastTimer=setTimeout(closeToast,4000);
 }
-function closeToast(){document.getElementById('milestone-toast').classList.remove('show');}
+function closeToast(){const t=document.getElementById('milestone-toast');if(t)t.remove();}
 
-// Check session streak milestonenction checkStreakMilestone(streak) {
+// Check session streak milestones
+function checkStreakMilestone(streak) {
   const milestones={3:'3-day streak',7:'7-day streak! One week strong',14:'14-day streak! Two weeks',30:'30-day streak! Flash Gordon grind',60:'60-day streak! Elite dedication'};
   const last=parseInt(localStorage.getItem('fgp_last_streak_milestone')||'0');
   for(const [days,msg] of Object.entries(milestones).reverse()) {
     if(streak>=parseInt(days)&&last<parseInt(days)){
       localStorage.setItem('fgp_last_streak_milestone',days);
-      showMilestone('🔥',msg,'Keethe routine going');
+      showMilestone('🔥',msg,'Keep the routine going');
       break;
     }
   }
@@ -1044,7 +1053,7 @@ function exportJSON() {
 }
 function exportCSV() {
   const rows=[['Date','Title','Duration(min)','Rating','Notes']];
-  S.sessions.forEach(s=>rows.push([fmtDate(s.date)||'',s.duration||60,s.rating||0,(s.notes||'').replace(/,/g,';')]));
+  S.sessions.forEach(s=>rows.push([fmtDate(s.date),s.title||'',s.duration||60,s.rating||0,(s.notes||'').replace(/,/g,';')]));
   const fargoRows=[['','FARGO ENTRIES','','',''],['Date','Rating','Source','Note','']];
   S.fargo.forEach(f=>fargoRows.push([fmtDate(f.date),f.rating,f.source,f.note||'','']));
   const csv=[...rows,...fargoRows].map(r=>r.join(',')).join('\n');
