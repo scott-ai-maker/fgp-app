@@ -334,7 +334,6 @@ for(var i=0;i<24;i++){var d=document.createElement('div');d.className='cell';d.i
 function toggle(){on?stop():go();}
 function go(){
   on=true;idx=0;
-  acquireWakeLock();
   document.getElementById('sbtn').innerHTML='&#9646;&#9646; STOP';
   document.getElementById('sbtn').className='btn red';
   document.getElementById('rbtn').style.display='none';
@@ -350,7 +349,6 @@ function go(){
 }
 function stop(){
   on=false;clearInterval(tmr);
-  releaseWakeLock();
   if(window.speechSynthesis)window.speechSynthesis.cancel();
   document.getElementById('sbtn').innerHTML='&#9654; START';
   document.getElementById('sbtn').className='btn blue';
@@ -812,15 +810,33 @@ function deleteFargo(i){
 var wakeLock=null;
 function acquireWakeLock(){
   if(!('wakeLock' in navigator))return;
-  navigator.wakeLock.request('screen').then(function(lock){wakeLock=lock;}).catch(function(){});
+  navigator.wakeLock.request('screen').then(function(lock){
+    wakeLock=lock;
+    wakeLock.addEventListener('release',function(){
+      // Re-request if mic is still armed (e.g. phone briefly locked)
+      if(micOn)acquireWakeLock();
+    });
+  }).catch(function(){});
 }
 function releaseWakeLock(){
   if(wakeLock){wakeLock.release();wakeLock=null;}
 }
-// Re-acquire if the page is foregrounded while cadence is running
+// Re-acquire + restart recognition when page comes back to foreground
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&on)acquireWakeLock();
+  if(document.visibilityState==='visible'&&micOn){
+    acquireWakeLock();
+    setTimeout(restartRecog,300);
+  }
 });
+
+// ── VOICE CONFIRMATION ──
+function speakConfirm(msg){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(msg);
+  u.rate=1.1;u.pitch=1.0;u.volume=1.0;u.lang='en-US';
+  window.speechSynthesis.speak(u);
+}
 
 // ── VOICE COMMANDS ──
 var recog=null,micOn=false;
@@ -837,30 +853,27 @@ function initSpeech(){
     var transcript=e.results[e.results.length-1][0].transcript.toLowerCase().trim();
     if(transcript.indexOf('hey flash')===-1)return;
     var cmd=transcript.replace(/hey flash[,\s]*/,'').trim();
-    var status='';
     if(cmd.indexOf('start')!==-1){
-      if(!on){go();status='\u25b6 Starting...';}
+      if(!on){go();speakConfirm('Starting');}
     } else if(cmd.indexOf('stop')!==-1){
-      if(on){stop();status='\u23f9 Stopped';}
+      if(on){stop();speakConfirm('Stopped');}
     } else if(cmd.indexOf('made')!==-1){
-      shot(true);status='\u2713 Made \u2014 '+made+'/'+att;
+      shot(true);speakConfirm('Made. '+made+' for '+att);
     } else if(cmd.indexOf('miss')!==-1){
-      shot(false);status='\u2717 Miss \u2014 '+made+'/'+att;
+      shot(false);speakConfirm('Miss. '+made+' for '+att);
     } else if(cmd.indexOf('reset')!==-1){
-      resetShots();status='\u21ba Counter reset';
+      resetShots();speakConfirm('Counter reset');
     } else if(cmd.indexOf('undo')!==-1){
-      undo();status='\u21a9 Undone';
+      undo();speakConfirm('Undone');
     } else {
-      status='? "'+cmd+'" \u2014 not recognized';
+      speakConfirm('Say again');
     }
-    if(status){
-      var el=document.getElementById('mic-status');
-      el.textContent=status;el.style.color='#00E676';
-      setTimeout(function(){
-        el.style.color='#4A4A6A';
-        el.textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
-      },2000);
-    }
+    var el=document.getElementById('mic-status');
+    el.style.color='#00E676';
+    setTimeout(function(){
+      el.style.color='#4A4A6A';
+      el.textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
+    },2000);
   };
 
   recog.onerror=function(e){
@@ -886,9 +899,11 @@ function toggleMic(){
   if(micOn){
     try{recog.start();}catch(e){}
     document.getElementById('mic-status').textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
+    acquireWakeLock();
   } else {
     try{recog.stop();}catch(e){}
     document.getElementById('mic-status').textContent='';
+    releaseWakeLock();
   }
   updateMicBtn();
 }
