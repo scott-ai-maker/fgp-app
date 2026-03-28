@@ -901,6 +901,8 @@ function toggleMic(){
   if(!recog)return;
   micOn=!micOn;
   if(micOn){
+    // Unlock iOS speech synthesis on this direct tap so speakConfirm works later
+    if(window.speechSynthesis){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);}
     try{recog.start();}catch(e){}
     document.getElementById('mic-status').textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
     acquireWakeLock();
