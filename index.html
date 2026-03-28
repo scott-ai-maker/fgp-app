@@ -839,7 +839,7 @@ function speakConfirm(msg){
 }
 
 // ── VOICE COMMANDS ──
-var recog=null,micOn=false;
+var recog=null,micOn=false,lastCmd='',lastCmdTime=0;
 
 function initSpeech(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -853,6 +853,10 @@ function initSpeech(){
     var transcript=e.results[e.results.length-1][0].transcript.toLowerCase().trim();
     if(transcript.indexOf('hey flash')===-1)return;
     var cmd=transcript.replace(/hey flash[,\s]*/,'').trim();
+    // Deduplicate: iOS fires onresult 2-3x for the same utterance
+    var now=Date.now();
+    if(cmd===lastCmd&&now-lastCmdTime<2500)return;
+    lastCmd=cmd;lastCmdTime=now;
     if(cmd.indexOf('start')!==-1){
       if(!on){go();speakConfirm('Starting');}
     } else if(cmd.indexOf('stop')!==-1){
