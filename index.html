@@ -904,9 +904,18 @@ function toggleMic(){
   if(micOn){
     // Unlock iOS speech synthesis on this direct tap so speakConfirm works later
     if(window.speechSynthesis){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);}
-    try{recog.start();}catch(e){}
     document.getElementById('mic-status').textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
     acquireWakeLock();
+    // getUserMedia establishes the iOS audio session routed to the active device
+    // (AirPods if connected) before handing off to SpeechRecognition
+    var startRecog=function(){try{recog.start();}catch(e){}};
+    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+      navigator.mediaDevices.getUserMedia({audio:true})
+        .then(function(stream){stream.getTracks().forEach(function(t){t.stop();});startRecog();})
+        .catch(startRecog);
+    } else {
+      startRecog();
+    }
   } else {
     try{recog.stop();}catch(e){}
     document.getElementById('mic-status').textContent='';
