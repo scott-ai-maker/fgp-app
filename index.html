@@ -334,6 +334,7 @@ for(var i=0;i<24;i++){var d=document.createElement('div');d.className='cell';d.i
 function toggle(){on?stop():go();}
 function go(){
   on=true;idx=0;
+  acquireWakeLock();
   document.getElementById('sbtn').innerHTML='&#9646;&#9646; STOP';
   document.getElementById('sbtn').className='btn red';
   document.getElementById('rbtn').style.display='none';
@@ -349,6 +350,7 @@ function go(){
 }
 function stop(){
   on=false;clearInterval(tmr);
+  releaseWakeLock();
   if(window.speechSynthesis)window.speechSynthesis.cancel();
   document.getElementById('sbtn').innerHTML='&#9654; START';
   document.getElementById('sbtn').className='btn blue';
@@ -805,6 +807,20 @@ function deleteFargo(i){
   localStorage.setItem('fgp_fargo',JSON.stringify(fargoData));
   renderFargo();
 }
+
+// ── WAKE LOCK ──
+var wakeLock=null;
+function acquireWakeLock(){
+  if(!('wakeLock' in navigator))return;
+  navigator.wakeLock.request('screen').then(function(lock){wakeLock=lock;}).catch(function(){});
+}
+function releaseWakeLock(){
+  if(wakeLock){wakeLock.release();wakeLock=null;}
+}
+// Re-acquire if the page is foregrounded while cadence is running
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&on)acquireWakeLock();
+});
 
 // ── VOICE COMMANDS ──
 var recog=null,micOn=false;
