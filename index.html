@@ -59,6 +59,10 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 .wtxt{font-size:13px;color:#4A4A6A;font-style:italic;line-height:1.5}
 .wnxt{background:none;border:none;font-size:10px;color:#4A4A6A;letter-spacing:1px;cursor:pointer;font-family:'Courier New',monospace;margin-top:8px;padding:0}
 
+/* MIC */
+@keyframes mic-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.mic-armed{background:rgba(0,191,255,.12);border:1px solid rgba(0,191,255,.4);color:#00BFFF;animation:mic-pulse 2s ease-in-out infinite}
+
 /* COACH */
 .api-notice{background:rgba(245,196,0,.05);border:1px solid rgba(245,196,0,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:11px;color:#F5C400}
 .api-notice.hidden{display:none}
@@ -113,6 +117,9 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 <div id="cue">READY</div>
 <div id="binfo">60 BPM · TAP START</div>
 <div class="grid" id="grid"></div>
+
+<button class="btn ghost" id="mic-btn" onclick="toggleMic()">&#127908; ARM VOICE &#8212; SAY &#34;HEY FLASH&#34;</button>
+<div id="mic-status" style="text-align:center;font-size:10px;color:#4A4A6A;letter-spacing:1px;margin-bottom:8px;min-height:16px"></div>
 
 <button class="btn blue" id="sbtn" onclick="toggle()">&#9654; START</button>
 <button class="btn ghost" id="rbtn" onclick="resetCycles()" style="display:none">&#8635; RESET CYCLES</button>
@@ -799,6 +806,88 @@ function deleteFargo(i){
   renderFargo();
 }
 
+// ── VOICE COMMANDS ──
+var recog=null,micOn=false;
+
+function initSpeech(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){document.getElementById('mic-btn').style.display='none';return;}
+  recog=new SR();
+  recog.continuous=true;
+  recog.interimResults=false;
+  recog.lang='en-US';
+
+  recog.onresult=function(e){
+    var transcript=e.results[e.results.length-1][0].transcript.toLowerCase().trim();
+    if(transcript.indexOf('hey flash')===-1)return;
+    var cmd=transcript.replace(/hey flash[,\s]*/,'').trim();
+    var status='';
+    if(cmd.indexOf('start')!==-1){
+      if(!on){go();status='\u25b6 Starting...';}
+    } else if(cmd.indexOf('stop')!==-1){
+      if(on){stop();status='\u23f9 Stopped';}
+    } else if(cmd.indexOf('made')!==-1){
+      shot(true);status='\u2713 Made \u2014 '+made+'/'+att;
+    } else if(cmd.indexOf('miss')!==-1){
+      shot(false);status='\u2717 Miss \u2014 '+made+'/'+att;
+    } else if(cmd.indexOf('reset')!==-1){
+      resetShots();status='\u21ba Counter reset';
+    } else if(cmd.indexOf('undo')!==-1){
+      undo();status='\u21a9 Undone';
+    } else {
+      status='? "'+cmd+'" \u2014 not recognized';
+    }
+    if(status){
+      var el=document.getElementById('mic-status');
+      el.textContent=status;el.style.color='#00E676';
+      setTimeout(function(){
+        el.style.color='#4A4A6A';
+        el.textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
+      },2000);
+    }
+  };
+
+  recog.onerror=function(e){
+    if(e.error==='no-speech'||e.error==='audio-capture'){
+      if(micOn)restartRecog();
+      return;
+    }
+    document.getElementById('mic-status').textContent='Error: '+e.error;
+    document.getElementById('mic-status').style.color='#FF3D57';
+    micOn=false;updateMicBtn();
+  };
+
+  recog.onend=function(){
+    if(micOn)setTimeout(restartRecog,300);
+  };
+}
+
+function restartRecog(){try{recog.start();}catch(e){}}
+
+function toggleMic(){
+  if(!recog)return;
+  micOn=!micOn;
+  if(micOn){
+    try{recog.start();}catch(e){}
+    document.getElementById('mic-status').textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
+  } else {
+    try{recog.stop();}catch(e){}
+    document.getElementById('mic-status').textContent='';
+  }
+  updateMicBtn();
+}
+
+function updateMicBtn(){
+  var btn=document.getElementById('mic-btn');
+  if(micOn){
+    btn.className='btn mic-armed';
+    btn.textContent='\uD83C\uDF99 LISTENING \u2014 HEY FLASH...';
+  } else {
+    btn.className='btn ghost';
+    btn.innerHTML='&#127908; ARM VOICE &#8212; SAY &#34;HEY FLASH&#34;';
+  }
+}
+
 // ── INIT ──
 wi=Math.floor(Math.random()*W.length);
 document.getElementById('wtxt').textContent=W[wi];
@@ -808,6 +897,7 @@ if(lastUrl)document.getElementById('yt-url').value=lastUrl;
 renderRecent();
 renderFargo();
 if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};}
+initSpeech();
 </script>
 </body>
 </html>
