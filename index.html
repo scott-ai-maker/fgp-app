@@ -869,7 +869,7 @@ function initSpeech(){
       resetShots();speakConfirm('Counter reset');
     } else if(cmd.indexOf('undo')!==-1){
       undo();speakConfirm('Undone');
-    } else {
+    } else if(cmd) {
       speakConfirm('Say again');
     }
     var el=document.getElementById('mic-status');
