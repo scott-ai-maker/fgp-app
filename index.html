@@ -5,27 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="FGP Cadence">
-<title>FGP Cadence</title>
+<meta name="apple-mobile-web-app-title" content="FGP">
+<title>Flash Gordon Pool</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#0A0A0F;color:#E0E0F0;font-family:'Courier New',monospace;padding:24px 16px 48px;max-width:420px;margin:0 auto;min-height:100vh}
+body{background:#0A0A0F;color:#E0E0F0;font-family:'Courier New',monospace;max-width:420px;margin:0 auto;min-height:100vh}
+button{font-family:'Courier New',monospace;cursor:pointer;border:none}
+
+/* TAB BAR */
+#tabbar{position:fixed;bottom:0;left:0;right:0;max-width:420px;margin:0 auto;background:#0A0A0F;border-top:1px solid #1E1E30;display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom,0)}
+.tab{flex:1;padding:10px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:#4A4A6A;font-size:9px;letter-spacing:1px;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tab.on{color:#00BFFF}
+.tab svg{width:20px;height:20px}
+
+/* PAGES */
+.page{display:none;padding:24px 16px 90px}
+.page.on{display:block}
+
+/* SHARED */
 h1{font-size:20px;letter-spacing:3px;color:#00BFFF;text-transform:uppercase;margin-bottom:4px}
 .sub{font-size:10px;color:#4A4A6A;letter-spacing:1px;margin-bottom:24px}
-.measure-row{display:flex;justify-content:space-around;margin-bottom:12px}
-.m{font-size:12px;font-weight:bold;color:#4A4A6A;letter-spacing:1px;padding-bottom:3px;border-bottom:2px solid transparent}
-.m.on{border-bottom-color:currentColor}
-#cue{font-size:64px;font-weight:bold;text-align:center;color:#4A4A6A;letter-spacing:4px;min-height:80px;line-height:80px;margin-bottom:8px}
-#binfo{text-align:center;font-size:12px;color:#4A4A6A;letter-spacing:2px;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:20px}
-.cell{height:10px;border-radius:3px;background:#1E1E30}
-button{font-family:'Courier New',monospace;cursor:pointer;border:none}
 .btn{display:block;width:100%;padding:16px;border-radius:10px;font-size:14px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
 .btn:active{opacity:.75;transform:scale(.97)}
 .blue{background:#00BFFF;color:#000}
 .red{background:#FF3D57;color:#fff}
 .ghost{background:transparent;border:1px solid #1E1E30;color:#4A4A6A}
 hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
+.inp{width:100%;background:#0A0A14;border:1px solid #1E1E30;border-radius:8px;padding:12px;color:#E0E0F0;font-size:13px;outline:none;font-family:'Courier New',monospace;margin-bottom:10px}
+.inp:focus{border-color:#00BFFF}
+.inp::placeholder{color:#4A4A6A}
+
+/* CADENCE */
+.measure-row{display:flex;justify-content:space-around;margin-bottom:12px}
+.m{font-size:11px;font-weight:bold;color:#4A4A6A;letter-spacing:1px;padding-bottom:3px;border-bottom:2px solid transparent}
+.m.on{border-bottom-color:currentColor}
+#cue{font-size:48px;font-weight:bold;text-align:center;color:#4A4A6A;letter-spacing:2px;min-height:80px;line-height:80px;margin-bottom:8px}
+#binfo{text-align:center;font-size:12px;color:#4A4A6A;letter-spacing:2px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:20px}
+.cell{height:10px;border-radius:3px;background:#1E1E30}
 .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .sbox{background:#141420;border:1px solid #1E1E30;border-radius:10px;padding:12px 6px;text-align:center}
 .sval{font-size:28px;font-weight:bold;display:block}
@@ -41,24 +58,60 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 .wlbl{font-size:9px;color:#F5C400;letter-spacing:2px;margin-bottom:6px}
 .wtxt{font-size:13px;color:#4A4A6A;font-style:italic;line-height:1.5}
 .wnxt{background:none;border:none;font-size:10px;color:#4A4A6A;letter-spacing:1px;cursor:pointer;font-family:'Courier New',monospace;margin-top:8px;padding:0}
+
+/* COACH */
+.api-notice{background:rgba(245,196,0,.05);border:1px solid rgba(245,196,0,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:11px;color:#F5C400}
+.api-notice.hidden{display:none}
+.load-box{text-align:center;padding:32px 16px;display:none}
+.load-box.on{display:block}
+.pulse{width:48px;height:48px;border:2px solid #00BFFF;border-radius:50%;margin:0 auto 12px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.2);opacity:.4}}
+.lstep{font-size:11px;color:#4A4A6A;margin:4px 0;transition:color .3s;letter-spacing:1px}
+.lstep.on{color:#00BFFF}.lstep.done{color:#00E676}
+.err-box{background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.3);border-radius:10px;padding:14px;margin-bottom:14px;font-size:11px;color:#FF3D57;display:none}
+.err-box.on{display:block}
+.card{background:#141420;border:1px solid #1E1E30;border-radius:12px;padding:16px;margin-bottom:14px}
+.clbl{font-size:9px;color:#4A4A6A;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.slabel{font-size:10px;color:#E0E0F0;flex:1;font-family:'Courier New',monospace}
+.strack{flex:0 0 80px;height:6px;background:#1E1E30;border-radius:3px;overflow:hidden}
+.sfill{height:100%;border-radius:3px;transition:width .6s}
+.snum{font-size:10px;color:#4A4A6A;width:24px;text-align:right;font-family:'Courier New',monospace}
+.drill{background:#0A0A14;border:1px solid #1E1E30;border-radius:8px;padding:12px;margin-bottom:8px}
+.dname{font-weight:bold;font-size:14px;color:#F5C400;margin-bottom:3px}
+.dreps{font-size:10px;color:#00BFFF;letter-spacing:1px;margin-bottom:3px}
+.dwhy{font-size:12px;color:#4A4A6A}
+.recent-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #1E1E30;gap:12px}
+.rgrade{font-size:22px;font-weight:bold;width:36px;text-align:center;font-family:'Courier New',monospace}
+.rinfo2{flex:1;min-width:0}
+.rdate{font-size:10px;color:#4A4A6A;letter-spacing:1px}
+.rtitle{font-size:13px;font-weight:bold;color:#E0E0F0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.rmeta{font-size:10px;color:#4A4A6A;margin-top:1px}
+
+/* FARGO */
+.f-src-btn{background:#0A0A14;border:1px solid #1E1E30;border-radius:6px;color:#4A4A6A;font-size:10px;letter-spacing:1px;padding:8px 4px;font-family:'Courier New',monospace;cursor:pointer;width:100%}
+.f-src-btn.on{border-color:#F5C400;color:#F5C400;background:rgba(245,196,0,.08)}
+.f-src-btn:active{opacity:.7}
 </style>
 </head>
 <body>
 
-<h1>⚡ FGP Cadence</h1>
-<div class="sub">briesath rhythm · 60 bpm · 4/4 · 4 beat prep + 16 beats</div>
+<!-- ══ CADENCE PAGE ══ -->
+<div class="page on" id="pg-cadence">
+<h1>&#9889; FGP Cadence</h1>
+<div class="sub">60 bpm · 4/4 · 6 measures · 24 beats</div>
 
 <div class="measure-row">
-  <div class="m" id="m0">PREP</div>
-  <div class="m" id="m1">M1</div>
-  <div class="m" id="m2">M2</div>
-  <div class="m" id="m3">M3</div>
-  <div class="m" id="m4">M4</div>
+  <div class="m" id="m1">MIND</div>
+  <div class="m" id="m2">EYES</div>
+  <div class="m" id="m3">FEET</div>
+  <div class="m" id="m4">STILL</div>
+  <div class="m" id="m5">FEEL</div>
+  <div class="m" id="m6">EXEC</div>
 </div>
 
 <div id="cue">READY</div>
 <div id="binfo">60 BPM · TAP START</div>
-
 <div class="grid" id="grid"></div>
 
 <button class="btn blue" id="sbtn" onclick="toggle()">&#9654; START</button>
@@ -68,115 +121,227 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 </div>
 
 <hr>
-
 <div style="font-size:10px;letter-spacing:2px;color:#4A4A6A;text-transform:uppercase;margin-bottom:12px">Shot Counter</div>
-
 <div class="sgrid">
   <div class="sbox"><span class="sval" id="smade" style="color:#00E676">0</span><span class="slbl">MADE</span></div>
   <div class="sbox"><span class="sval" id="satt" style="color:#00BFFF">0</span><span class="slbl">ATTEMPTS</span></div>
   <div class="sbox"><span class="sval" id="spct" style="color:#F5C400">&#8212;</span><span class="slbl">PCT</span></div>
 </div>
-
 <div class="pbar"><div class="pfill" id="pfill"></div></div>
 <div class="rinfo">
   <div>Current run: <span id="srun" style="color:#00BFFF">0</span></div>
   <div>Best run: <span id="sbest" style="color:#F5C400">0</span></div>
 </div>
-
 <div class="sbtns">
   <button class="made" onclick="shot(true)">&#10003; MADE<br><span style="font-size:10px;font-weight:normal;opacity:.7">tap after pocket</span></button>
   <button class="miss" onclick="shot(false)">&#10007; MISS<br><span style="font-size:10px;font-weight:normal;opacity:.7">tap on miss</span></button>
 </div>
-
-<button class="btn ghost" onclick="resetShots()">&#8635; RESET SHOT COUNTER</button>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+  <button class="btn ghost" onclick="undo()" id="undobtn" style="opacity:.4;pointer-events:none">&#8630; UNDO</button>
+  <button class="btn ghost" onclick="resetShots()">&#8635; RESET</button>
+</div>
 
 <div class="wcard">
   <div class="wlbl">&#9889; FLASH COACH SAYS</div>
   <div class="wtxt" id="wtxt"></div>
   <button class="wnxt" onclick="nextW()">&#8635; NEXT</button>
 </div>
+</div>
+
+<!-- ══ COACH PAGE ══ -->
+<div class="page" id="pg-coach">
+<h1>&#9889; Flash Coach</h1>
+<div class="sub">AI video analysis · gemini 2.5 flash</div>
+
+<div class="api-notice" id="api-notice">
+  &#9888; Add your Gemini API key below to enable Flash Coach
+</div>
+
+<div class="card">
+  <div class="clbl">Gemini API Key</div>
+  <input type="password" id="api-key" class="inp" placeholder="AIza...">
+  <button class="btn blue" onclick="saveKey()" style="margin-bottom:0">SAVE KEY</button>
+</div>
+
+<div class="card">
+  <div class="clbl">YouTube Session URL</div>
+  <input type="url" id="yt-url" class="inp" placeholder="https://youtube.com/watch?v=..." oninput="localStorage.setItem('fgp_last_url',this.value)">
+  <div class="clbl">Session Notes (optional)</div>
+  <textarea id="s-notes" class="inp" rows="2" placeholder="What were you working on?"></textarea>
+  <button class="btn blue" id="analyze-btn" onclick="analyze()" style="margin-bottom:0">&#128269; ANALYZE WITH FLASH COACH</button>
+</div>
+
+<div class="err-box" id="err-box"></div>
+
+<div class="load-box" id="load-box">
+  <div class="pulse"></div>
+  <div style="font-size:11px;color:#00BFFF;letter-spacing:2px;margin-bottom:12px">ANALYZING...</div>
+  <div id="lsteps"></div>
+</div>
+
+<div id="results"></div>
+
+<div id="coach-recent">
+  <div style="font-size:10px;letter-spacing:2px;color:#4A4A6A;text-transform:uppercase;margin-bottom:10px;padding-top:4px">Recent Sessions</div>
+  <div id="recent-list"></div>
+  <div id="recent-empty" style="text-align:center;padding:20px;font-size:11px;color:#4A4A6A;letter-spacing:1px">No sessions yet</div>
+</div>
+</div>
+
+<!-- ══ FARGO PAGE ══ -->
+<div class="page" id="pg-fargo">
+<h1>&#9889; Fargo Tracker</h1>
+<div class="sub">rating history · target 750 pro</div>
+
+<!-- Hero rating -->
+<div style="text-align:center;margin-bottom:20px">
+  <div style="font-size:72px;font-weight:bold;color:#F5C400;font-family:'Courier New',monospace;line-height:1" id="f-hero">&#8212;</div>
+  <div style="font-size:11px;color:#4A4A6A;letter-spacing:2px;margin-top:6px" id="f-trend">NO DATA</div>
+</div>
+
+<!-- Progress bar -->
+<div style="margin-bottom:20px">
+  <div style="display:flex;justify-content:space-between;font-size:9px;color:#4A4A6A;letter-spacing:1px;margin-bottom:6px">
+    <span>CURRENT</span><span>TARGET 750</span>
+  </div>
+  <div class="pbar"><div style="height:100%;background:linear-gradient(90deg,#F5C400,#00E676);border-radius:4px;width:0%;transition:width .4s" id="f-progbar"></div></div>
+  <div style="font-size:9px;color:#4A4A6A;letter-spacing:1px;text-align:center;margin-top:4px" id="f-prog-lbl"></div>
+</div>
+
+<!-- 3 stat boxes -->
+<div class="sgrid">
+  <div class="sbox"><span class="sval" id="f-official" style="color:#00BFFF">&#8212;</span><span class="slbl">OFFICIAL</span></div>
+  <div class="sbox"><span class="sval" id="f-ai" style="color:#F5C400">&#8212;</span><span class="slbl">AI EST</span></div>
+  <div class="sbox"><span class="sval" style="color:#00E676">750</span><span class="slbl">TARGET</span></div>
+</div>
+
+<!-- Bar chart -->
+<div class="card">
+  <div class="clbl">Last 12 Entries</div>
+  <div id="f-chart" style="display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:6px"></div>
+  <div style="display:flex;justify-content:space-between;font-size:9px;color:#4A4A6A;letter-spacing:1px">
+    <span>OLDER</span>
+    <span>&#9632; OFFICIAL &nbsp; &#9632; AI &nbsp; &#9632; SELF</span>
+    <span>RECENT</span>
+  </div>
+</div>
+
+<!-- Log button -->
+<button class="btn blue" onclick="toggleFargoForm()" id="f-log-btn">+ LOG FARGO RATING</button>
+
+<!-- Log form — inline block/none toggle, no fixed-position -->
+<div id="fargo-form" style="display:none">
+  <div class="card" style="border-color:rgba(245,196,0,.3)">
+    <div class="clbl">New Entry</div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#4A4A6A;letter-spacing:1px;margin-bottom:4px">
+      <span>RATING</span>
+      <span style="color:#F5C400;font-size:16px;font-weight:bold" id="f-slider-val">640</span>
+    </div>
+    <input type="range" id="f-slider" min="400" max="800" value="640"
+      style="width:100%;accent-color:#F5C400;margin-bottom:16px;cursor:pointer"
+      oninput="document.getElementById('f-slider-val').textContent=this.value">
+    <div class="clbl">SOURCE</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px">
+      <button class="f-src-btn on" id="src-Official" onclick="selectFargoSrc('Official')">OFFICIAL</button>
+      <button class="f-src-btn" id="src-AI" onclick="selectFargoSrc('AI')">AI EST</button>
+      <button class="f-src-btn" id="src-Self" onclick="selectFargoSrc('Self')">SELF</button>
+    </div>
+    <div class="clbl">NOTE (optional)</div>
+    <input type="text" id="f-note" class="inp" placeholder="Tournament, league night, practice...">
+    <button class="btn blue" onclick="saveFargo()" style="margin-bottom:8px">SAVE ENTRY</button>
+    <button class="btn ghost" onclick="toggleFargoForm()">CANCEL</button>
+  </div>
+</div>
+
+<!-- History list -->
+<div class="card">
+  <div class="clbl">History</div>
+  <div id="f-history"></div>
+  <div id="f-empty" style="text-align:center;padding:16px 0;font-size:11px;color:#4A4A6A;letter-spacing:1px">No entries yet — tap LOG to add your first rating</div>
+</div>
+</div>
+
+<!-- ══ TAB BAR ══ -->
+<div id="tabbar">
+  <button class="tab on" id="tab-cadence" onclick="showTab('cadence')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    CADENCE
+  </button>
+  <button class="tab" id="tab-coach" onclick="showTab('coach')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+    COACH
+  </button>
+  <button class="tab" id="tab-fargo" onclick="showTab('fargo')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+    FARGO
+  </button>
+</div>
 
 <script>
+// ── TABS ──
+function showTab(t){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('pg-'+t).classList.add('on');
+  document.getElementById('tab-'+t).classList.add('on');
+  if(t==='coach')renderRecent();
+  if(t==='fargo')renderFargo();
+}
+
+// ── CADENCE ──
 var BEATS=[
-  {m:0,b:1,l:'...',v:null,c:'#2A2A3A'},
-  {m:0,b:2,l:'...',v:null,c:'#2A2A3A'},
-  {m:0,b:3,l:'...',v:null,c:'#2A2A3A'},
-  {m:0,b:4,l:'GO',v:'Go',c:'#4A4A6A'},
-  {m:1,b:1,l:'STEP',v:'Step',c:'#00BFFF'},
-  {m:1,b:2,l:'SET',v:'Set',c:'#00BFFF'},
-  {m:1,b:3,l:'DOWN',v:'Down',c:'#00BFFF'},
-  {m:1,b:4,l:'SETTLE',v:null,c:'#4A4A6A'},
-  {m:2,b:1,l:'HOLD',v:null,c:'#4A4A6A'},
-  {m:2,b:2,l:'HOLD',v:null,c:'#4A4A6A'},
-  {m:2,b:3,l:'BACK',v:'Back',c:'#F5C400'},
-  {m:2,b:4,l:'FORWARD',v:'Forward',c:'#F5C400'},
-  {m:3,b:1,l:'BACK',v:'Back',c:'#F5C400'},
-  {m:3,b:2,l:'FORWARD',v:'Forward',c:'#F5C400'},
-  {m:3,b:3,l:'BACK',v:'Back',c:'#F5C400'},
-  {m:3,b:4,l:'FORWARD',v:'Forward',c:'#F5C400'},
-  {m:4,b:1,l:'BACK',v:'Back',c:'#F5C400'},
-  {m:4,b:2,l:'BACK',v:'Back',c:'#F5C400'},
-  {m:4,b:3,l:'SHOOT',v:'Shoot',c:'#00E676'},
-  {m:4,b:4,l:'HOLD',v:null,c:'#4A4A6A'}
+  {m:1,b:1,l:'CALM',    v:'Calm',    c:'#4A4A6A'},
+  {m:1,b:2,l:'· · ·',  v:null,      c:'#2A2A3A'},
+  {m:1,b:3,l:'· · ·',  v:null,      c:'#2A2A3A'},
+  {m:1,b:4,l:'READY',  v:'Ready',   c:'#4A4A6A'},
+  {m:2,b:1,l:'CUE',    v:'Cue',     c:'#00BFFF'},
+  {m:2,b:2,l:'BALL',   v:'Ball',    c:'#F5C400'},
+  {m:2,b:3,l:'CUE',    v:'Cue',     c:'#00BFFF'},
+  {m:2,b:4,l:'BALL',   v:'Ball',    c:'#F5C400'},
+  {m:3,b:1,l:'STEP',   v:'Step',    c:'#00BFFF'},
+  {m:3,b:2,l:'STEP',   v:'Step',    c:'#00BFFF'},
+  {m:3,b:3,l:'DROP',   v:'Drop',    c:'#00BFFF'},
+  {m:3,b:4,l:'· · ·', v:null,      c:'#2A2A3A'},
+  {m:4,b:1,l:'PIN',    v:'Pin',     c:'#FF3D57'},
+  {m:4,b:2,l:'STILL',  v:'Still',   c:'#2A2A3A'},
+  {m:4,b:3,l:'SLOW',   v:'Slow',    c:'#F5C400'},
+  {m:4,b:4,l:'SMOOTH', v:'Smooth',  c:'#F5C400'},
+  {m:5,b:1,l:'SLOW',   v:'Slow',    c:'#F5C400'},
+  {m:5,b:2,l:'SMOOTH', v:'Smooth',  c:'#F5C400'},
+  {m:5,b:3,l:'SLOW',   v:'Slow',    c:'#F5C400'},
+  {m:5,b:4,l:'· · ·', v:null,      c:'#2A2A3A'},
+  {m:6,b:1,l:'THROUGH',v:'Through', c:'#00E676'},
+  {m:6,b:2,l:'STILL',  v:'Still',   c:'#2A2A3A'},
+  {m:6,b:3,l:'STILL',  v:null,      c:'#2A2A3A'},
+  {m:6,b:4,l:'CHECK',  v:'Check',   c:'#00BFFF'},
 ];
 
-var W=[
-  'Every shot the same. Every time.',
-  'The stroke is a pendulum. Elbow pivots. Nothing else moves.',
-  'Settle at the cue ball. Do not rush the backswing.',
-  'Eyes on the object ball at contact. Every time.',
-  'Follow-through is not optional. Finish through the ball.',
-  'Speed control is 60% of position play.',
-  'Commit before you get down. No second-guessing.',
-  'The slow backswing separates pros from amateurs.',
-  'One shot at a time. That is all there is.',
-  'Hold your finish. Watch the cue ball.',
-  'Your Fargo is built one shot at a time.',
-  'The comeback nobody saw coming.',
-  'Routine is your armor. Wear it every shot.',
-  'Plan two balls ahead. Always.'
-];
+var W=['Every shot the same. Every time.','The stroke is a pendulum. Elbow pivots. Nothing else moves.','Settle at the cue ball. Do not rush the backswing.','Eyes on the object ball at contact. Every time.','Follow-through is not optional. Finish through the ball.','Speed control is 60% of position play.','Commit before you get down. No second-guessing.','The slow backswing separates pros from amateurs.','One shot at a time. That is all there is.','Hold your finish. Watch the cue ball.','Your Fargo is built one shot at a time.','The comeback nobody saw coming.','Routine is your armor. Wear it every shot.','Plan two balls ahead. Always.'];
 
 var on=false,idx=0,tmr=null,cyc=0;
-var made=0,att=0,run=0,best=0,wi=0;
+var made=0,att=0,run=0,best=0,wi=0,lastWasMade=null;
 
-// Build grid
 var g=document.getElementById('grid');
-for(var i=0;i<20;i++){var d=document.createElement('div');d.className='cell';d.id='c'+i;g.appendChild(d);}
+for(var i=0;i<24;i++){var d=document.createElement('div');d.className='cell';d.id='c'+i;g.appendChild(d);}
 
 function toggle(){on?stop():go();}
-
 function go(){
-  on=true; idx=0;
+  on=true;idx=0;
   document.getElementById('sbtn').innerHTML='&#9646;&#9646; STOP';
   document.getElementById('sbtn').className='btn red';
   document.getElementById('rbtn').style.display='none';
-  // Unlock iOS audio with a silent utterance on the direct tap gesture
-  if(window.speechSynthesis){
-    window.speechSynthesis.cancel();
-    var unlock=new SpeechSynthesisUtterance(' ');
-    unlock.volume=0;
-    window.speechSynthesis.speak(unlock);
-  }
-  // Small delay so unlock settles before first real word
+  if(window.speechSynthesis){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);}
   setTimeout(function(){
     fire(0);
     tmr=setInterval(function(){
       idx++;
-      if(idx>=20){
-        cyc++;
-        document.getElementById('cyc').textContent=cyc;
-        nextW();
-        stop();
-        return;
-      }
+      if(idx>=24){cyc++;document.getElementById('cyc').textContent=cyc;nextW();stop();return;}
       fire(idx);
     },1000);
   },150);
 }
-
 function stop(){
-  on=false; clearInterval(tmr);
+  on=false;clearInterval(tmr);
   if(window.speechSynthesis)window.speechSynthesis.cancel();
   document.getElementById('sbtn').innerHTML='&#9654; START';
   document.getElementById('sbtn').className='btn blue';
@@ -184,40 +349,25 @@ function stop(){
   document.getElementById('cue').textContent='READY';
   document.getElementById('cue').style.color='#4A4A6A';
   document.getElementById('binfo').textContent='60 BPM · TAP START';
-  for(var i=0;i<20;i++){var c=document.getElementById('c'+i);c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
-  for(var m=0;m<=4;m++){var e=document.getElementById('m'+m);e.style.color='#4A4A6A';e.classList.remove('on');}
+  for(var i=0;i<24;i++){var c=document.getElementById('c'+i);c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
+  for(var m=1;m<=6;m++){var e=document.getElementById('m'+m);e.style.color='#4A4A6A';e.classList.remove('on');}
 }
-
 function fire(i){
   var b=BEATS[i];
   document.getElementById('cue').textContent=b.l;
   document.getElementById('cue').style.color=b.c;
   document.getElementById('binfo').textContent=b.b+' \xb7 4';
-  for(var m=0;m<=4;m++){
-    var e=document.getElementById('m'+m);
-    if(b.m===m){e.style.color=b.c;e.classList.add('on');}
-    else{e.style.color='#4A4A6A';e.classList.remove('on');}
-  }
-  for(var j=0;j<20;j++){
-    var c=document.getElementById('c'+j);
-    if(j===i){c.style.background=b.c;c.style.height='18px';c.style.opacity='1';}
-    else if(j<i){c.style.background=BEATS[j].c;c.style.height='10px';c.style.opacity='0.2';}
-    else{c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}
-  }
-  if(b.v&&window.speechSynthesis){
-    window.speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(b.v);
-    u.rate=0.9;u.pitch=1.1;u.volume=1;
-    window.speechSynthesis.speak(u);
-  }
+  for(var m=1;m<=6;m++){var e=document.getElementById('m'+m);if(b.m===m){e.style.color=b.c;e.classList.add('on');}else{e.style.color='#4A4A6A';e.classList.remove('on');}}
+  for(var j=0;j<24;j++){var c=document.getElementById('c'+j);if(j===i){c.style.background=b.c;c.style.height='18px';c.style.opacity='1';}else if(j<i){c.style.background=BEATS[j].c;c.style.height='10px';c.style.opacity='0.2';}else{c.style.background='#1E1E30';c.style.height='10px';c.style.opacity='1';}}
+  if(b.v&&window.speechSynthesis){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(b.v);u.rate=0.9;u.pitch=1.1;u.volume=1;window.speechSynthesis.speak(u);}
 }
-
 function resetCycles(){cyc=0;document.getElementById('cyc').textContent='0';document.getElementById('rbtn').style.display='none';}
-
 function shot(m){
-  att++;
+  lastWasMade=m;att++;
   if(m){made++;run++;}else{run=0;}
   if(run>best)best=run;
+  document.getElementById('undobtn').style.opacity='1';
+  document.getElementById('undobtn').style.pointerEvents='auto';
   document.getElementById('smade').textContent=made;
   document.getElementById('satt').textContent=att;
   var p=att>0?Math.round(made/att*100):0;
@@ -226,13 +376,437 @@ function shot(m){
   document.getElementById('srun').textContent=run;
   document.getElementById('sbest').textContent=best;
 }
-
-function resetShots(){made=0;att=0;run=0;best=0;document.getElementById('smade').textContent=0;document.getElementById('satt').textContent=0;document.getElementById('spct').textContent='—';document.getElementById('pfill').style.width='0%';document.getElementById('srun').textContent=0;document.getElementById('sbest').textContent=0;}
-
+function undo(){
+  if(att===0)return;
+  if(lastWasMade){made--;run=Math.max(0,run-1);}
+  att--;if(att===0){run=0;best=0;}
+  lastWasMade=null;
+  document.getElementById('undobtn').style.opacity='0.4';
+  document.getElementById('undobtn').style.pointerEvents='none';
+  document.getElementById('smade').textContent=made;
+  document.getElementById('satt').textContent=att;
+  var p=att>0?Math.round(made/att*100):0;
+  document.getElementById('spct').textContent=att>0?p+'%':'—';
+  document.getElementById('pfill').style.width=p+'%';
+  document.getElementById('srun').textContent=run;
+  document.getElementById('sbest').textContent=best;
+}
+function resetShots(){made=0;att=0;run=0;best=0;lastWasMade=null;document.getElementById('smade').textContent=0;document.getElementById('satt').textContent=0;document.getElementById('spct').textContent='—';document.getElementById('pfill').style.width='0%';document.getElementById('srun').textContent=0;document.getElementById('sbest').textContent=0;document.getElementById('undobtn').style.opacity='0.4';document.getElementById('undobtn').style.pointerEvents='none';}
 function nextW(){var p=wi;while(wi===p)wi=Math.floor(Math.random()*W.length);document.getElementById('wtxt').textContent=W[wi];}
 
+// ── COACH ──
+var MODEL='gemini-2.5-flash';
+var PROMPT='You are Flash Coach, an elite AI billiards coach for Flash Gordon Pool.\n\nPLAYER: Scott "Flash Gordon" Gordon. Fargo ~640 rising, goal 750+ pro. Orthodox stroke rebuild. 60 BPM cadence routine. McDermott H1752, Defy carbon shaft, Brunswick Gold Crown IV 9ft, Simonis 870.\n\nAnalyze the session video honestly. Connect all feedback to the 3-year pro timeline. Be direct, warm, authoritative.\n\nReturn ONLY valid JSON:\n{"sessionSummary":"string","overallScore":1-100,"overallGrade":"A+/A/A-/B+/B/B-/C+/C/C-/D/F","fargoEstimate":{"rating":0,"range":"string","trend":"Rising/Stable/Declining","confidence":"Low/Medium/High","toNextTier":"string"},"scorecard":{"preShot":1-10,"stance":1-10,"bridge":1-10,"stroke":1-10,"followThrough":1-10,"cueBallControl":1-10,"positionPlay":1-10,"safetyPlay":1-10,"speedControl":1-10,"mentalGame":1-10},"strengths":[{"title":"string","detail":"string"}],"improvements":[{"title":"string","detail":"string","priority":1}],"jerryNarrative":"3-5 paragraphs coaching feedback","practicePrescription":{"focus":"string","drills":[{"name":"string","reps":"string","why":"string"}],"mentalCue":"string"},"proTimelineNote":"string"}';
+var LSTEPS=['Sending video to Flash Coach...','Analyzing stroke mechanics...','Checking pre-shot routine...','Evaluating position play...','Estimating Fargo rating...','Writing coaching report...'];
+var SCLABELS={preShot:'Pre-Shot',stance:'Stance',bridge:'Bridge',stroke:'Stroke',followThrough:'Follow-Through',cueBallControl:'CB Control',positionPlay:'Position Play',safetyPlay:'Safety Play',speedControl:'Speed Control',mentalGame:'Mental Game'};
+var coachHistory=JSON.parse(localStorage.getItem('fgp_coach')||'[]');
+var apiKey=localStorage.getItem('fgp_key')||'';
+var ltmr=null,lidx=0;
+
+function saveKey(){
+  apiKey=document.getElementById('api-key').value.trim();
+  localStorage.setItem('fgp_key',apiKey);
+  document.getElementById('api-notice').classList.toggle('hidden',!!apiKey);
+  alert(apiKey?'API key saved!':'Key cleared.');
+}
+
+function gc(g){return g&&g[0]==='A'?'#00E676':g&&g[0]==='B'?'#00BFFF':g&&g[0]==='C'?'#F5C400':'#FF3D57';}
+function sc(s){return s>=8?'#00E676':s>=6?'#00BFFF':s>=5?'#F5C400':'#FF3D57';}
+
+function startLoad(){
+  var el=document.getElementById('lsteps');
+  el.innerHTML=LSTEPS.map(function(s){return '<div class="lstep">'+s+'</div>';}).join('');
+  el.children[0].classList.add('on');
+  lidx=0;
+  ltmr=setInterval(function(){
+    if(lidx<el.children.length-1){el.children[lidx].classList.remove('on');el.children[lidx].classList.add('done');lidx++;el.children[lidx].classList.add('on');}
+  },3500);
+}
+function stopLoad(){clearInterval(ltmr);}
+
+function analyze(){
+  var url=document.getElementById('yt-url').value.trim();
+  var notes=document.getElementById('s-notes').value.trim();
+  if(!url){showErr('Please enter a YouTube URL');return;}
+  if(!apiKey){showErr('Add your Gemini API key above');return;}
+  hideErr();
+  document.getElementById('results').innerHTML='';
+  document.getElementById('coach-recent').style.display='none';
+  document.getElementById('load-box').classList.add('on');
+  document.getElementById('analyze-btn').disabled=true;
+  startLoad();
+  var trendCtx='';
+  if(coachHistory.length===0){
+    trendCtx='First analyzed session — no previous data.';
+  } else {
+    trendCtx='PREVIOUS SESSIONS (use for trend analysis):\n';
+    coachHistory.slice(0,3).forEach(function(s,i){
+      trendCtx+='Session '+(i+1)+' ('+new Date(s.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})+'):\n';
+      trendCtx+='  Grade: '+s.grade+' ('+s.score+'/100), Fargo ~'+(s.fargo||'unknown')+'\n';
+      if(s.a&&s.a.scorecard){
+        var sc2=s.a.scorecard;
+        var scStr=Object.entries(sc2).map(function(kv){var v=kv[1];return kv[0]+':'+(typeof v==='object'?v.score:v);}).join(', ');
+        trendCtx+='  Scorecard: '+scStr+'\n';
+      }
+      if(s.a&&s.a.practicePrescription&&s.a.practicePrescription.focus){
+        trendCtx+='  Prescription focus was: '+s.a.practicePrescription.focus+'\n';
+      }
+      trendCtx+='\n';
+    });
+  }
+  var body=JSON.stringify({system_instruction:{parts:[{text:PROMPT}]},contents:[{role:'user',parts:[{text:'Analyze: '+url+'\n'+(notes?'Notes: "'+notes+'"\n\n':'')+trendCtx+'\nReturn JSON only.'}]}],generationConfig:{temperature:0.7,maxOutputTokens:4000,responseMimeType:'application/json'}});
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:body})
+  .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});})
+  .then(function(res){
+    if(!res.ok)throw new Error(res.d.error&&res.d.error.message||'API error');
+    var raw=(res.d.candidates&&res.d.candidates[0]&&res.d.candidates[0].content&&res.d.candidates[0].content.parts&&res.d.candidates[0].content.parts[0]&&res.d.candidates[0].content.parts[0].text)||'';
+    var a=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    stopLoad();
+    document.getElementById('load-box').classList.remove('on');
+    var vid=(url.match(/(?:v=|youtu\.be\/)([^&\s]+)/)||[])[1]||'';
+    var entry={id:Date.now(),date:new Date().toISOString(),url:url,vid:vid,notes:notes,grade:a.overallGrade,score:a.overallScore,fargo:(a.fargoEstimate&&a.fargoEstimate.rating)||null,summary:a.sessionSummary,a:a};
+    coachHistory.unshift(entry);coachHistory=coachHistory.slice(0,20);
+    localStorage.setItem('fgp_coach',JSON.stringify(coachHistory));
+    renderResults(a);
+    document.getElementById('analyze-btn').disabled=false;
+    document.getElementById('coach-recent').style.display='block';
+  })
+  .catch(function(e){
+    stopLoad();
+    document.getElementById('load-box').classList.remove('on');
+    document.getElementById('analyze-btn').disabled=false;
+    document.getElementById('coach-recent').style.display='block';
+    showErr(e.message||'Analysis failed. Check your API key.');
+  });
+}
+
+function renderResults(a){
+  var f=a.fargoEstimate||{},p=a.practicePrescription||{};
+  var h='<div class="card" style="border-color:'+(gc(a.overallGrade))+'40">';
+  h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">';
+  h+='<div style="font-size:56px;font-weight:bold;color:'+gc(a.overallGrade)+';line-height:1;font-family:Courier New,monospace">'+a.overallGrade+'</div>';
+  h+='<div><div style="font-size:28px;font-weight:bold;font-family:Courier New,monospace">'+a.overallScore+'<span style="font-size:13px;color:#4A4A6A">/100</span></div>';
+  h+='<div style="font-size:11px;color:#00BFFF;letter-spacing:1px">FARGO ~'+(f.rating||'—')+'</div>';
+  h+='<div style="font-size:9px;color:#4A4A6A;letter-spacing:1px">'+(f.trend||'')+' · '+(f.confidence||'')+'</div></div></div>';
+  h+='<div style="font-size:13px;line-height:1.6;color:#E0E0F0">'+(a.sessionSummary||'')+'</div></div>';
+  if(a.scorecard&&Object.keys(a.scorecard).length){
+    h+='<div class="card"><div class="clbl">Scorecard</div>';
+    Object.entries(a.scorecard).forEach(function(e){
+      var k=e[0],v=e[1];
+      var score=typeof v==='object'?(v.score||0):(v||0);
+      var label=SCLABELS[k]||k;
+      h+='<div class="srow"><div class="slabel">'+label+'</div><div class="strack"><div class="sfill" style="width:'+(score*10)+'%;background:'+sc(score)+'"></div></div><div class="snum" style="color:'+sc(score)+'">'+score+'</div></div>';
+    });
+    h+='</div>';
+  }
+  if(a.strengths&&a.strengths.length){
+    h+='<div class="card"><div class="clbl">Strengths</div>';
+    a.strengths.forEach(function(s){h+='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #1E1E30"><div style="font-weight:bold;font-size:14px;color:#00E676;margin-bottom:3px">'+s.title+'</div><div style="font-size:12px;color:#4A4A6A">'+s.detail+'</div></div>';});
+    h+='</div>';
+  }
+  if(a.improvements&&a.improvements.length){
+    var pc={1:'#FF3D57',2:'#F5C400',3:'#00BFFF'},pl={1:'URGENT',2:'FOCUS',3:'REFINE'};
+    h+='<div class="card"><div class="clbl">Improvements</div>';
+    a.improvements.slice().sort(function(x,y){return (x.priority||3)-(y.priority||3);}).forEach(function(i){
+      var c=pc[i.priority]||'#4A4A6A',l=pl[i.priority]||'NOTE';
+      h+='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #1E1E30"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-size:9px;color:'+c+';border:1px solid '+c+';border-radius:3px;padding:1px 5px;font-family:Courier New,monospace">'+l+'</span><span style="font-weight:bold;font-size:14px">'+i.title+'</span></div><div style="font-size:12px;color:#4A4A6A">'+i.detail+'</div></div>';
+    });
+    h+='</div>';
+  }
+  if(a.jerryNarrative)h+='<div class="card"><div class="clbl">Flash Coach Says</div><div style="font-size:13px;line-height:1.7;white-space:pre-wrap">'+a.jerryNarrative+'</div></div>';
+  if(p.focus||(p.drills&&p.drills.length)){
+    h+='<div class="card" style="border-color:rgba(245,196,0,.2)"><div class="clbl">Practice Prescription</div>';
+    if(p.focus)h+='<div style="background:rgba(245,196,0,.06);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:10px;margin-bottom:12px"><div style="font-size:9px;color:#F5C400;letter-spacing:1px;margin-bottom:3px">FOCUS</div><div style="font-size:13px;font-weight:bold">'+p.focus+'</div></div>';
+    (p.drills||[]).forEach(function(d){h+='<div class="drill"><div class="dname">'+d.name+'</div><div class="dreps">'+(d.reps||'')+'</div><div class="dwhy">'+(d.why||'')+'</div></div>';});
+    if(p.mentalCue)h+='<div style="font-size:11px;color:#F5C400;text-align:center;font-style:italic;margin-top:8px">"'+p.mentalCue+'"</div>';
+    h+='</div>';
+  }
+  if(a.proTimelineNote)h+='<div class="card"><div class="clbl">Pro Timeline</div><div style="font-size:13px;line-height:1.6">'+a.proTimelineNote+'</div></div>';
+  h+='<button class="btn ghost" onclick="genYTDesc()" style="margin-top:4px">&#128196; GENERATE YOUTUBE DESCRIPTION</button>';
+  document.getElementById('results').innerHTML=h;
+}
+
+function renderRecent(){
+  var list=document.getElementById('recent-list'),empty=document.getElementById('recent-empty');
+  if(!coachHistory.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=coachHistory.slice(0,5).map(function(s,i){
+    return '<div class="recent-row">'+
+      '<div class="rgrade" style="color:'+gc(s.grade)+'">'+s.grade+'</div>'+
+      '<div class="rinfo2">'+
+        '<div class="rdate">'+new Date(s.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'</div>'+
+        '<div class="rtitle">'+(s.summary||'Session')+'</div>'+
+        '<div class="rmeta">Fargo ~'+(s.fargo||'—')+' · '+(s.score||0)+'/100</div>'+
+        '<div style="display:flex;gap:8px;margin-top:6px">'+
+          '<button onclick="reanalyze('+i+')" style="font-size:9px;color:#00BFFF;background:rgba(0,191,255,.08);border:1px solid rgba(0,191,255,.3);border-radius:5px;padding:3px 8px;cursor:pointer;font-family:Courier New,monospace;letter-spacing:1px">&#8635; RE-ANALYZE</button>'+
+          '<button onclick="deleteSession('+i+')" style="font-size:9px;color:#FF3D57;background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.3);border-radius:5px;padding:3px 8px;cursor:pointer;font-family:Courier New,monospace;letter-spacing:1px">&#215; DELETE</button>'+
+        '</div>'+
+      '</div></div>';
+  }).join('');
+}
+
+function deleteSession(i){
+  if(!confirm('Delete this session?'))return;
+  coachHistory.splice(i,1);
+  localStorage.setItem('fgp_coach',JSON.stringify(coachHistory));
+  renderRecent();
+}
+
+function reanalyze(i){
+  var s=coachHistory[i];
+  if(!s||!s.url)return;
+  document.getElementById('yt-url').value=s.url;
+  document.getElementById('s-notes').value=s.notes||'';
+  localStorage.setItem('fgp_last_url',s.url);
+  window.scrollTo({top:0,behavior:'smooth'});
+  coachHistory.splice(i,1);
+  coachHistory.push(s);
+  localStorage.setItem('fgp_coach',JSON.stringify(coachHistory));
+  analyze();
+}
+
+function showErr(m){var e=document.getElementById('err-box');e.textContent=m;e.classList.add('on');}
+function hideErr(){document.getElementById('err-box').classList.remove('on');}
+
+function genYTDesc(){
+  var e=coachHistory[0];
+  if(!e||!e.a)return;
+  var a=e.a,f=a.fargoEstimate||{},p=a.practicePrescription||{};
+  var sc2=a.scorecard||{};
+  var scLines=Object.entries(sc2).map(function(kv){
+    var k=kv[0],v=kv[1];
+    var score=typeof v==='object'?(v.score||0):(v||0);
+    var label={preShot:'Pre-Shot Routine',stance:'Stance & Alignment',bridge:'Bridge & Grip',stroke:'Stroke Mechanics',followThrough:'Follow-Through',cueBallControl:'CB Control',positionPlay:'Position Play',safetyPlay:'Safety Play',speedControl:'Speed Control',mentalGame:'Mental Game'}[k]||k;
+    var bar='';for(var i=0;i<10;i++)bar+=i<score?'\u2588':'\u2591';
+    return label+': '+bar+' '+score+'/10';
+  }).join('\n');
+  var drillLines=(p.drills||[]).map(function(d,i){return (i+1)+'. '+d.name+' \u2014 '+d.reps;}).join('\n');
+  var date=new Date(e.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var desc='\u26a1 FLASH GORDON POOL | Practice Session Analysis\n'+date+'\n\nThe comeback nobody saw coming.\n\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    '\ud83d\udccb SESSION SUMMARY\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    (a.sessionSummary||'')+
+    '\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    '\ud83d\udcca FLASH COACH GRADE: '+a.overallGrade+' \xb7 '+a.overallScore+'/100\n'+
+    'Fargo Est: ~'+(f.rating||'\u2014')+' ('+(f.range||'\u2014')+') \xb7 '+(f.trend||'')+
+    '\n\nSCORECARD\n'+scLines+
+    '\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    '\ud83c\udfaf PRACTICE PRESCRIPTION\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    'Focus: '+(p.focus||'\u2014')+'\n\n'+
+    (drillLines?'Drills:\n'+drillLines+'\n\n':'')+
+    (p.mentalCue?'Mental cue: "'+p.mentalCue+'"\n\n':'')+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    '\u2699\ufe0f EQUIPMENT\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    'Cue: McDermott H1752 | Defy Carbon Fiber Shaft\n'+
+    'Table: Brunswick Gold Crown IV 9ft\n'+
+    'Cloth: Simonis 870 Tournament Blue\n\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    '\ud83e\udde0 AI COACHING\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    'Analyzed by Flash Coach AI\n'+
+    'Cadence: 60 BPM \xb7 6 measures \xb7 Feel-based cues\n\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    '\ud83d\udccd FLASH GORDON POOL\n'+
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n'+
+    'Scott "Flash Gordon" Gordon | Fitchburg, MA\n'+
+    'Fargo ~640 rising | Goal: 750+ Pro\n'+
+    'The orthodox stroke rebuild. The 3-year plan.\n\n'+
+    'flashgordonpool.com\n'+
+    '@flashgordonpool\n\n'+
+    '#poolbilliards #billiards #9ball #8ball #poolplayer\n'+
+    '#flashgordonpool #fargorating #brunswick #mcdermott\n'+
+    '#simonis #practicesession #orthodoxstroke #cueball\n'+
+    '#poolcoach #billiardstraining #comebacker';
+
+  var existing=document.getElementById('yt-desc-box');
+  if(existing)existing.remove();
+  var wrap=document.createElement('div');
+  wrap.id='yt-desc-box';
+  wrap.className='card';
+  wrap.style.marginTop='14px';
+  wrap.innerHTML='<div class="clbl" style="margin-bottom:8px">YouTube Description</div>'+
+    '<textarea class="inp" rows="12" style="font-size:11px;line-height:1.5;margin-bottom:10px" readonly>'+desc+'</textarea>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+    '<button class="btn blue" onclick="copyDesc()">&#128203; COPY</button>'+
+    '<button class="btn ghost" onclick="shareDesc()" id="share-btn" style="display:none">&#8679; SHARE</button>'+
+    '</div>';
+  document.getElementById('results').appendChild(wrap);
+  wrap.scrollIntoView({behavior:'smooth'});
+  if(navigator.share){var sb=wrap.querySelector('#share-btn');if(sb)sb.style.display='block';}
+}
+
+function shareDesc(){
+  var ta=document.querySelector('#yt-desc-box textarea');
+  if(!ta)return;
+  if(navigator.share)navigator.share({title:'Flash Gordon Pool \u2014 Session Analysis',text:ta.value}).catch(function(){});
+}
+
+function copyDesc(){
+  var ta=document.querySelector('#yt-desc-box textarea');
+  if(!ta)return;
+  ta.select();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(ta.value).then(function(){
+      var btn=document.querySelector('#yt-desc-box .btn');
+      btn.textContent='\u2713 COPIED!';btn.style.background='#00E676';
+      setTimeout(function(){btn.innerHTML='&#128203; COPY';btn.style.background='#00BFFF';},2000);
+    });
+  } else {
+    document.execCommand('copy');alert('Copied!');
+  }
+}
+
+// ── FARGO TRACKER ──
+var fargoData=JSON.parse(localStorage.getItem('fgp_fargo')||'[]');
+var fargoSrc='Official';
+
+function selectFargoSrc(s){
+  fargoSrc=s;
+  ['Official','AI','Self'].forEach(function(x){
+    document.getElementById('src-'+x).classList.toggle('on',x===s);
+  });
+}
+
+function toggleFargoForm(){
+  var f=document.getElementById('fargo-form');
+  var showing=f.style.display==='block';
+  f.style.display=showing?'none':'block';
+  if(!showing){
+    // Pre-fill slider with last known rating
+    var last=fargoData.length?fargoData[0].rating:640;
+    document.getElementById('f-slider').value=last;
+    document.getElementById('f-slider-val').textContent=last;
+    // Reset source to Official
+    selectFargoSrc('Official');
+    document.getElementById('f-note').value='';
+    document.getElementById('fargo-form').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+
+function saveFargo(){
+  var rating=parseInt(document.getElementById('f-slider').value);
+  var note=document.getElementById('f-note').value.trim();
+  var entry={id:Date.now(),date:new Date().toISOString(),rating:rating,source:fargoSrc,note:note};
+  fargoData.unshift(entry);
+  localStorage.setItem('fgp_fargo',JSON.stringify(fargoData));
+  document.getElementById('fargo-form').style.display='none';
+  renderFargo();
+}
+
+function getFargoTrend(data){
+  if(data.length<2)return 'NO DATA';
+  var diff=data[0].rating-data[1].rating;
+  if(diff>=15)return '\u2b06 SURGING';
+  if(diff>=3)return '\u2197 RISING';
+  if(diff<=-5)return '\u2198 DECLINING';
+  return '\u2192 STABLE';
+}
+
+function getTrendColor(trend){
+  if(trend.indexOf('SURGING')>=0)return '#00E676';
+  if(trend.indexOf('RISING')>=0)return '#00BFFF';
+  if(trend.indexOf('DECLINING')>=0)return '#FF3D57';
+  return '#4A4A6A';
+}
+
+function getFargoSrcColor(src){
+  return src==='Official'?'#00BFFF':src==='AI'?'#F5C400':'#4A4A6A';
+}
+
+function renderFargo(){
+  if(!fargoData.length){
+    document.getElementById('f-hero').innerHTML='&#8212;';
+    document.getElementById('f-trend').textContent='NO DATA';
+    document.getElementById('f-trend').style.color='#4A4A6A';
+    document.getElementById('f-progbar').style.width='0%';
+    document.getElementById('f-prog-lbl').textContent='';
+    document.getElementById('f-official').innerHTML='&#8212;';
+    document.getElementById('f-ai').innerHTML='&#8212;';
+    document.getElementById('f-chart').innerHTML='';
+    document.getElementById('f-history').innerHTML='';
+    document.getElementById('f-empty').style.display='block';
+    return;
+  }
+
+  var latest=fargoData[0];
+  var trend=getFargoTrend(fargoData);
+  var trendColor=getTrendColor(trend);
+
+  document.getElementById('f-hero').textContent=latest.rating;
+  document.getElementById('f-trend').textContent=trend;
+  document.getElementById('f-trend').style.color=trendColor;
+
+  // Progress toward 750 (baseline 400)
+  var pct=Math.min(100,Math.max(0,(latest.rating-400)/(750-400)*100));
+  document.getElementById('f-progbar').style.width=pct+'%';
+  var toGo=750-latest.rating;
+  document.getElementById('f-prog-lbl').textContent=toGo>0?(toGo+' POINTS TO TARGET'):'TARGET REACHED!';
+
+  // Stat boxes — most recent of each source
+  var offEntry=fargoData.find(function(e){return e.source==='Official';});
+  var aiEntry=fargoData.find(function(e){return e.source==='AI';});
+  document.getElementById('f-official').textContent=offEntry?offEntry.rating:'—';
+  document.getElementById('f-ai').textContent=aiEntry?aiEntry.rating:'—';
+
+  // Bar chart — last 12 entries, oldest→newest (left→right)
+  var chartData=fargoData.slice(0,12).reverse();
+  var chart=document.getElementById('f-chart');
+  chart.innerHTML='';
+  chartData.forEach(function(e){
+    // height 8–72px mapped from rating 400–800
+    var h=Math.round((e.rating-400)/400*64)+8;
+    var col=document.createElement('div');
+    col.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px';
+    col.title=e.rating+' ('+e.source+') '+new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    var bar=document.createElement('div');
+    bar.style.cssText='width:100%;border-radius:3px 3px 0 0;background:'+getFargoSrcColor(e.source)+';opacity:0.85;height:'+h+'px';
+    var lbl=document.createElement('div');
+    lbl.style.cssText='font-size:7px;color:#4A4A6A;font-family:Courier New,monospace;text-align:center;line-height:1';
+    lbl.textContent=e.rating;
+    col.appendChild(bar);
+    col.appendChild(lbl);
+    chart.appendChild(col);
+  });
+
+  // History list
+  document.getElementById('f-empty').style.display='none';
+  document.getElementById('f-history').innerHTML=fargoData.map(function(e,i){
+    var srcColor=getFargoSrcColor(e.source);
+    var dateStr=new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return '<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #1E1E30;gap:10px">'+
+      '<div style="font-size:22px;font-weight:bold;color:#F5C400;font-family:Courier New,monospace;width:44px;text-align:center">'+e.rating+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">'+
+          '<span style="font-size:9px;color:'+srcColor+';border:1px solid '+srcColor+';border-radius:3px;padding:1px 5px;font-family:Courier New,monospace">'+e.source.toUpperCase()+'</span>'+
+          '<span style="font-size:10px;color:#4A4A6A;letter-spacing:1px">'+dateStr+'</span>'+
+        '</div>'+
+        (e.note?'<div style="font-size:11px;color:#4A4A6A;margin-top:2px">'+esc(e.note)+'</div>':'')+
+      '</div>'+
+      '<button onclick="deleteFargo('+i+')" style="font-size:9px;color:#FF3D57;background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.3);border-radius:5px;padding:4px 7px;cursor:pointer;font-family:Courier New,monospace;flex-shrink:0">\u00d7</button>'+
+    '</div>';
+  }).join('');
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function deleteFargo(i){
+  if(!confirm('Delete this entry?'))return;
+  fargoData.splice(i,1);
+  localStorage.setItem('fgp_fargo',JSON.stringify(fargoData));
+  renderFargo();
+}
+
+// ── INIT ──
 wi=Math.floor(Math.random()*W.length);
 document.getElementById('wtxt').textContent=W[wi];
+if(apiKey){document.getElementById('api-key').value=apiKey;document.getElementById('api-notice').classList.add('hidden');}
+var lastUrl=localStorage.getItem('fgp_last_url')||'';
+if(lastUrl)document.getElementById('yt-url').value=lastUrl;
+renderRecent();
+renderFargo();
 if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};}
 </script>
 </body>

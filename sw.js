@@ -14,5 +14,7 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Only handle same-origin requests — skip API calls to external services
+  if (!e.request.url.startsWith(self.location.origin)) return;
   e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
