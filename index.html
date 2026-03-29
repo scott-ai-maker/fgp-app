@@ -119,7 +119,7 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
 <div id="binfo">60 BPM · TAP START</div>
 <div class="grid" id="grid"></div>
 
-<button class="btn ghost" id="mic-btn" onclick="toggleMic()">&#127908; ARM VOICE &#8212; SAY &#34;HEY FLASH&#34;</button>
+<button class="btn ghost" id="mic-btn" onclick="toggleMic()">&#127908; ARM VOICE</button>
 <div id="mic-status" style="text-align:center;font-size:10px;color:#4A4A6A;letter-spacing:1px;margin-bottom:8px;min-height:16px"></div>
 
 <button class="btn blue" id="sbtn" onclick="toggle()">&#9654; START</button>
@@ -850,35 +850,48 @@ function initSpeech(){
   recog.interimResults=false;
   recog.lang='en-US';
 
+  function flashStatus(el,msg){
+    el.textContent=msg;el.style.color='#00E676';
+    setTimeout(function(){el.style.color='#4A4A6A';el.textContent='\uD83C\uDF99 Listening...';},2000);
+  }
+
   recog.onresult=function(e){
     var transcript=e.results[e.results.length-1][0].transcript.toLowerCase().trim();
-    if(transcript.indexOf('hey flash')===-1)return;
-    var cmd=transcript.replace(/hey flash[,\s]*/,'').trim();
-    // Deduplicate: iOS fires onresult 2-3x for the same utterance
-    var now=Date.now();
-    if(cmd===lastCmd&&now-lastCmdTime<2500)return;
-    lastCmd=cmd;lastCmdTime=now;
-    if(cmd.indexOf('start')!==-1){
-      if(!on){go();speakConfirm('Starting');}
-    } else if(cmd.indexOf('stop')!==-1){
-      if(on){stop();speakConfirm('Stopped');}
-    } else if(cmd.indexOf('made')!==-1){
-      shot(true);speakConfirm('Made. '+made+' for '+att);
-    } else if(cmd.indexOf('miss')!==-1){
-      shot(false);speakConfirm('Miss. '+made+' for '+att);
-    } else if(cmd.indexOf('reset')!==-1){
-      resetShots();speakConfirm('Counter reset');
-    } else if(cmd.indexOf('undo')!==-1){
-      undo();speakConfirm('Undone');
-    } else if(cmd) {
-      speakConfirm('Say again');
-    }
     var el=document.getElementById('mic-status');
-    el.style.color='#00E676';
-    setTimeout(function(){
-      el.style.color='#4A4A6A';
-      el.textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
-    },2000);
+    var now=Date.now();
+
+    // ── SHOT COMMANDS — no wake word needed ──
+    if(/\b(made|maid|mate|wade|paid)\b/.test(transcript)){
+      if('made'===lastCmd&&now-lastCmdTime<2500)return;
+      lastCmd='made';lastCmdTime=now;
+      shot(true);speakConfirm('Made. '+made+' for '+att);flashStatus(el,'\u2713 Made');
+      return;
+    }
+    if(/\b(miss|kiss|mrs|mist)\b/.test(transcript)){
+      if('miss'===lastCmd&&now-lastCmdTime<2500)return;
+      lastCmd='miss';lastCmdTime=now;
+      shot(false);speakConfirm('Miss. '+made+' for '+att);flashStatus(el,'\u2717 Miss');
+      return;
+    }
+
+    // ── CONTROL COMMANDS — require "flash" ──
+    if(!/\b(flash|flesh|lash|clash|slash|blast)\b/.test(transcript))return;
+
+    var action='';
+    if(/\b(start|dart|chart|heart|park|mark)\b/.test(transcript))action='start';
+    else if(/\b(stop|top|cop|drop|prop)\b/.test(transcript))action='stop';
+    else if(/\b(reset|restart|set)\b/.test(transcript))action='reset';
+    else if(/\b(undo|unto|uno|under)\b/.test(transcript))action='undo';
+    else action='unknown';
+
+    if(action===lastCmd&&now-lastCmdTime<2500)return;
+    lastCmd=action;lastCmdTime=now;
+
+    if(action==='start'){if(!on){go();speakConfirm('Starting');flashStatus(el,'\u25b6 Starting');}}
+    else if(action==='stop'){if(on){stop();speakConfirm('Stopped');flashStatus(el,'\u23f9 Stopped');}}
+    else if(action==='reset'){resetShots();speakConfirm('Counter reset');flashStatus(el,'\u21ba Reset');}
+    else if(action==='undo'){undo();speakConfirm('Undone');flashStatus(el,'\u21a9 Undone');}
+    else{speakConfirm('Say again');flashStatus(el,'? Say again');}
   };
 
   recog.onerror=function(e){
@@ -904,7 +917,7 @@ function toggleMic(){
   if(micOn){
     // Unlock iOS speech synthesis on this direct tap so speakConfirm works later
     if(window.speechSynthesis){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);}
-    document.getElementById('mic-status').textContent='\uD83C\uDF99 Listening for "Hey Flash"...';
+    document.getElementById('mic-status').textContent='\uD83C\uDF99 Listening...';
     acquireWakeLock();
     // getUserMedia establishes the iOS audio session routed to the active device
     // (AirPods if connected) before handing off to SpeechRecognition
@@ -928,10 +941,10 @@ function updateMicBtn(){
   var btn=document.getElementById('mic-btn');
   if(micOn){
     btn.className='btn mic-armed';
-    btn.textContent='\uD83C\uDF99 LISTENING \u2014 HEY FLASH...';
+    btn.textContent='\uD83C\uDF99 LISTENING...';
   } else {
     btn.className='btn ghost';
-    btn.innerHTML='&#127908; ARM VOICE &#8212; SAY &#34;HEY FLASH&#34;';
+    btn.innerHTML='&#127908; ARM VOICE';
   }
 }
 
