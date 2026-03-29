@@ -831,11 +831,16 @@ document.addEventListener('visibilitychange',function(){
 });
 
 // ── VOICE CONFIRMATION ──
+var speakingConfirm=false;
 function speakConfirm(msg){
   if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
   var u=new SpeechSynthesisUtterance(msg);
   u.rate=1.1;u.pitch=1.0;u.volume=1.0;u.lang='en-US';
+  // Stop recognition while speaking so AirPods don't echo TTS back as commands
+  speakingConfirm=true;
+  if(recog&&micOn){try{recog.stop();}catch(e){}}
+  u.onend=function(){speakingConfirm=false;if(micOn)setTimeout(restartRecog,300);};
   window.speechSynthesis.speak(u);
 }
 
@@ -905,7 +910,7 @@ function initSpeech(){
   };
 
   recog.onend=function(){
-    if(micOn)setTimeout(restartRecog,300);
+    if(micOn&&!speakingConfirm)setTimeout(restartRecog,300);
   };
 }
 
