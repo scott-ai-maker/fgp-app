@@ -154,6 +154,14 @@ hr{border:none;border-top:1px solid #1E1E30;margin:24px 0}
   <div class="wtxt" id="wtxt"></div>
   <button class="wnxt" onclick="nextW()">&#8635; NEXT</button>
 </div>
+
+<hr>
+<div style="font-size:10px;letter-spacing:2px;color:#4A4A6A;text-transform:uppercase;margin-bottom:12px">All-Time Stats</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px" id="alltime-stats"></div>
+
+<div style="font-size:10px;letter-spacing:2px;color:#4A4A6A;text-transform:uppercase;margin-bottom:10px">Session History</div>
+<div id="session-history"></div>
+<div id="session-empty" style="text-align:center;padding:16px;font-size:11px;color:#4A4A6A;letter-spacing:1px">No sessions yet — tap START to begin</div>
 </div>
 
 <!-- ══ COACH PAGE ══ -->
@@ -335,6 +343,7 @@ for(var i=0;i<24;i++){var d=document.createElement('div');d.className='cell';d.i
 function toggle(){on?stop():go();}
 function go(){
   on=true;idx=0;
+  startSession();
   document.getElementById('sbtn').innerHTML='&#9646;&#9646; STOP';
   document.getElementById('sbtn').className='btn red';
   document.getElementById('rbtn').style.display='none';
@@ -343,7 +352,7 @@ function go(){
     fire(0);
     tmr=setInterval(function(){
       idx++;
-      if(idx>=24){cyc++;document.getElementById('cyc').textContent=cyc;nextW();stop();return;}
+      if(idx>=24){cyc++;document.getElementById('cyc').textContent=cyc;if(currentSession)currentSession.cycles=cyc;nextW();stop();return;}
       fire(idx);
     },1000);
   },150);
@@ -374,6 +383,7 @@ function shot(m){
   lastWasMade=m;att++;
   if(m){made++;run++;}else{run=0;}
   if(run>best)best=run;
+  if(currentSession)currentSession.longestRun=best;
   document.getElementById('undobtn').style.opacity='1';
   document.getElementById('undobtn').style.pointerEvents='auto';
   document.getElementById('smade').textContent=made;
@@ -822,12 +832,9 @@ function acquireWakeLock(){
 function releaseWakeLock(){
   if(wakeLock){wakeLock.release();wakeLock=null;}
 }
-// Re-acquire + restart recognition when page comes back to foreground
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&micOn){
-    acquireWakeLock();
-    setTimeout(restartRecog,300);
-  }
+  if(document.visibilityState==='hidden'){saveSession();}
+  if(document.visibilityState==='visible'&&micOn){acquireWakeLock();setTimeout(restartRecog,300);}
 });
 
 // ── VOICE CONFIRMATION ──
@@ -955,6 +962,89 @@ function updateMicBtn(){
 }
 
 
+// ── SESSION TRACKING ──
+var sessionStart=null,sessionTimer=null,currentSession=null;
+
+function startSession(){
+  if(sessionStart)return;
+  sessionStart=Date.now();
+  currentSession={id:Date.now(),date:new Date().toISOString(),duration:0,shots:{attempted:0,made:0,pct:0},longestRun:0,cycles:0};
+  sessionTimer=setInterval(function(){
+    if(currentSession)currentSession.duration=Math.round((Date.now()-sessionStart)/60000);
+  },60000);
+}
+
+function saveSession(){
+  if(!currentSession||!sessionStart)return;
+  currentSession.duration=Math.max(1,Math.round((Date.now()-sessionStart)/60000));
+  currentSession.shots.attempted=att;
+  currentSession.shots.made=made;
+  currentSession.shots.pct=att>0?Math.round(made/att*100):0;
+  currentSession.longestRun=best;
+  currentSession.cycles=cyc;
+  if(currentSession.duration>=1||att>0){
+    var sessions=JSON.parse(localStorage.getItem('fgp_sessions')||'[]');
+    sessions.unshift(currentSession);
+    sessions=sessions.slice(0,90);
+    localStorage.setItem('fgp_sessions',JSON.stringify(sessions));
+    updateAllTime(currentSession);
+    renderStats();
+  }
+  clearInterval(sessionTimer);
+  sessionStart=null;currentSession=null;
+}
+
+function updateAllTime(s){
+  var at=JSON.parse(localStorage.getItem('fgp_alltime')||'{}');
+  at.totalMinutes=(at.totalMinutes||0)+s.duration;
+  at.totalShots=(at.totalShots||0)+s.shots.attempted;
+  at.totalMade=(at.totalMade||0)+s.shots.made;
+  at.allTimeLongestRun=Math.max(at.allTimeLongestRun||0,s.longestRun);
+  at.totalSessions=(at.totalSessions||0)+1;
+  var today=new Date().toDateString();
+  var last=at.lastPracticeDate;
+  if(last===today){/* same day — no streak change */}
+  else if(last===new Date(Date.now()-86400000).toDateString()){at.currentStreak=(at.currentStreak||0)+1;}
+  else{at.currentStreak=1;}
+  at.lastPracticeDate=today;
+  localStorage.setItem('fgp_alltime',JSON.stringify(at));
+}
+
+function renderStats(){
+  var at=JSON.parse(localStorage.getItem('fgp_alltime')||'{}');
+  var sessions=JSON.parse(localStorage.getItem('fgp_sessions')||'[]');
+  var boxes=[
+    {val:at.totalSessions||0,lbl:'SESSIONS',color:'#F5C400'},
+    {val:at.totalMinutes||0,lbl:'MINUTES',color:'#00BFFF'},
+    {val:at.currentStreak||0,lbl:'DAY STREAK',color:'#F5C400'},
+    {val:at.totalMade||0,lbl:'MADE',color:'#00E676'},
+    {val:at.totalShots||0,lbl:'SHOTS',color:'#00BFFF'},
+    {val:at.allTimeLongestRun||0,lbl:'BEST RUN',color:'#00E676'},
+  ];
+  document.getElementById('alltime-stats').innerHTML=boxes.map(function(b){
+    return '<div class="sbox"><span class="sval" style="color:'+b.color+'">'+b.val+'</span><span class="slbl">'+b.lbl+'</span></div>';
+  }).join('');
+  var empty=document.getElementById('session-empty');
+  var hist=document.getElementById('session-history');
+  if(!sessions.length){empty.style.display='block';hist.innerHTML='';return;}
+  empty.style.display='none';
+  hist.innerHTML=sessions.slice(0,10).map(function(s){
+    var d=new Date(s.date);
+    var dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    var pct=s.shots.attempted>0?Math.round(s.shots.made/s.shots.attempted*100)+'%':'—';
+    return '<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #1E1E30;gap:10px">'+
+      '<div style="font-family:Courier New,monospace;font-size:10px;color:#4A4A6A;width:48px">'+dateStr+'</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:12px;font-weight:bold;color:#E0E0F0">'+s.duration+'min &middot; '+s.cycles+' cycles</div>'+
+        '<div style="font-size:10px;color:#4A4A6A;margin-top:1px">'+s.shots.made+'/'+s.shots.attempted+' ('+pct+') &middot; best run: '+s.longestRun+'</div>'+
+      '</div>'+
+      '<div style="font-family:Courier New,monospace;font-size:16px;font-weight:bold;color:#F5C400">'+s.longestRun+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+window.addEventListener('pagehide',saveSession);
+
 // ── INIT ──
 wi=Math.floor(Math.random()*W.length);
 document.getElementById('wtxt').textContent=W[wi];
@@ -963,6 +1053,7 @@ var lastUrl=localStorage.getItem('fgp_last_url')||'';
 if(lastUrl)document.getElementById('yt-url').value=lastUrl;
 renderRecent();
 renderFargo();
+renderStats();
 if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};}
 initSpeech();
 </script>
